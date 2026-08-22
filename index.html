@@ -1,45 +1,568 @@
-<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de Préstamos</title><style>body{font-family:Arial;margin:0;background:#f4f6f8;color:#222}header{background:#173f8a;color:#fff;padding:20px;text-align:center}nav{padding:10px;background:#fff;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}button,input,select{padding:10px;border-radius:7px;border:1px solid #ccc}button{background:#173f8a;color:#fff;border:0;cursor:pointer}.danger{background:#b42318}.secondary{background:#64748b}main{max-width:1150px;margin:auto;padding:15px}.card{background:#fff;padding:18px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px #0001}.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.stats{font-size:24px;font-weight:bold;background:#eef2ff;padding:15px;border-radius:10px;text-align:center}.wrap{overflow:auto}table{width:100%;border-collapse:collapse}th{background:#173f8a;color:#fff}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}.ok{color:#137333;font-weight:bold}.warn{color:#b54708;font-weight:bold}.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px}.modal>div{background:#fff;padding:20px;border-radius:10px;max-width:500px;width:100%}@media print{body>*:not(#modal){display:none!important}#modal{position:static;background:#fff}.modal button{display:none}}</style>
-<body> 
-    <!-- Pantalla de Login -->
-<div id="loginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; justify-content:center; align-items:center; z-index:9999;">
-  <div style="background:#ffffff; padding:30px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.3); width:320px; text-align:center;">
-    <h2 style="margin-bottom:20px; color:#0f172a; font-family:sans-serif;">Acceso al Sistema</h2>
-    
-    <div style="text-align:left; margin-bottom:15px;">
-      <label style="font-size:14px; font-weight:bold; color:#475569; display:block; margin-bottom:5px;">Usuario:</label>
-      <input type="text" id="loginUser" placeholder="Ingresa tu usuario" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
-    </div>
-    
-    <div style="text-align:left; margin-bottom:20px;">
-      <label style="font-size:14px; font-weight:bold; color:#475569; display:block; margin-bottom:5px;">Contraseña:</label>
-      <input type="password" id="loginPass" placeholder="Ingresa tu contraseña" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
-    </div>
-    
-    <button onclick="validarAcceso()" style="width:100%; padding:12px; background:#2563eb; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Ingresar</button>
-    <p id="loginError" style="color:#ef4444; margin-top:15px; display:none; font-size:14px;"></p>
-  </div>
-</div><header><h1 id="brand">🏢 MI EMPRESA DE PRÉSTAMOS</h1><p id="tag">Control de préstamos, clientes y rutas</p></header><nav><button onclick="show('home')">Inicio</button><button onclick="show('company')">Empresa</button><button onclick="show('clients')">Clientes</button><button onclick="show('loans')">Préstamos</button><button onclick="show('route')">Ruta</button><button onclick="show('pay')">Cobros</button><button onclick="show('cash')">Caja</button><button onclick="show('reports')">Reportes</button></nav><main>
-<section id="home" class="page card"><h2>Resumen</h2><div class="grid"><div class="stats">Clientes<br><span id="sc">0</span></div><div class="stats">Préstamos activos<br><span id="sl">0</span></div><div class="stats">Cobrado<br><span id="sm">RD$0</span></div><div class="stats">Pendiente<br><span id="ss">RD$0</span></div></div></section>
-<section id="company" class="page card hidden"><h2>Empresa</h2><div class="grid"><input id="cn" placeholder="Nombre de empresa"><input id="ct" placeholder="Teléfono"><input id="cd" placeholder="Dirección"><input id="cs" placeholder="Eslogan"><button onclick="saveCompany()">Guardar</button></div></section>
-<section id="clients" class="page card hidden"><h2>Clientes</h2><input type="hidden" id="edit"><div class="grid"><input id="n" placeholder="Nombre completo"><input id="ci" placeholder="Cédula"><input id="tel" placeholder="Teléfono"><input id="addr" placeholder="Dirección"><input id="cr" placeholder="Ruta asignada"><button onclick="saveClient()">Guardar cliente</button><button class="secondary" onclick="clearClient()">Cancelar</button></div><div class="wrap"><table><thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Acciones</th></tr></thead><tbody id="clientsList"></tbody></table></div></section>
-<section id="loans" class="page card hidden"><h2>Crear préstamo</h2><div class="grid"><select id="lc"></select><input id="lm" type="number" placeholder="Monto"><input id="li" type="number" placeholder="Interés %"><input id="lq" type="number" placeholder="Cuota"><select id="lf"><option>Diaria</option><option>Semanal</option><option>Quincenal</option><option>Mensual</option></select><button onclick="saveLoan()">Crear préstamo</button></div><div class="wrap"><table><thead><tr><th>Cliente</th><th>Total</th><th>Saldo</th><th>Cuota</th><th>Adelantado</th><th>Estado</th></tr></thead><tbody id="loansList"></tbody></table></div></section>
-<section id="route" class="page card hidden"><h2>Abrir / cerrar ruta</h2><div class="grid"><input id="rn" placeholder="Nombre de ruta"><input id="rc" placeholder="Cobrador"><input id="rd" type="date"><button onclick="openRoute()">Abrir ruta</button><button class="danger" onclick="closeRoute()">Cerrar ruta</button></div><div id="routeInfo"></div><div class="wrap"><table><thead><tr><th>Cliente</th><th>Cuota</th><th>Saldo</th><th>Adelantado</th><th>Estado</th></tr></thead><tbody id="routeList"></tbody></table></div></section>
-<section id="pay" class="page card hidden"><h2>Registrar cobro</h2><div class="grid"><select id="pl"></select><input id="pm" type="number" placeholder="Monto recibido"><input id="pn" placeholder="Nota opcional"><button onclick="payLoan()">Registrar pago</button></div><p>Si paga más de una cuota, el excedente queda registrado como pago adelantado.</p></section>
-<section id="cash" class="page card hidden"><h2>Caja diaria</h2><div id="cashBox"></div></section>
-<section id="reports" class="page card hidden"><h2>Reportes y respaldo</h2><div id="reportBox"></div><button onclick="backup()">Descargar respaldo</button><button class="secondary" onclick="restore.click()">Restaurar respaldo</button><input id="restore" class="hidden" type="file" accept=".json" onchange="restoreData(event)"></section></main><div id="modal"  style="display:none"><div id="receipt"><button onclick="print()">Imprimir recibo</button><button class="secondary" onclick="modal.classList.add('hidden')">Cerrar</button></div></div>
-<script>let D=JSON.parse(localStorage.getItem('loanapp')||'{"company":{"name":"MI EMPRESA DE PRÉSTAMOS","phone":"","address":"","slogan":"Control de préstamos, clientes y rutas"},"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');const $=id=>document.getElementById(id),money=x=>'RD$'+Number(x||0).toLocaleString('es-DO',{minimumFractionDigits:2}),save=()=>localStorage.setItem('loanapp',JSON.stringify(D)),today=()=>new Date().toISOString().slice(0,10),client=id=>D.clients.find(x=>x.id==id);function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');render()}function saveCompany(){D.company={name:cn.value||D.company.name,phone:ct.value,address:cd.value,slogan:cs.value||''};save();render();alert('Empresa guardada')}function saveClient(){let id=+edit.value,o={id:id||Date.now(),name:n.value,ci:ci.value,tel:tel.value,addr:addr.value,route:cr.value};if(!o.name)return alert('Escribe el nombre');id?D.clients=D.clients.map(x=>x.id==id?o:x):D.clients.push(o);save();clearClient();render()}function clearClient(){edit.value=n.value=ci.value=tel.value=addr.value=cr.value=''}function editClient(id){let x=client(id);edit.value=x.id;n.value=x.name;ci.value=x.ci;tel.value=x.tel;addr.value=x.addr;cr.value=x.route;show('clients')}function delClient(id){if(D.loans.some(x=>x.clientId==id&&x.active))return alert('No puedes eliminarlo: tiene préstamo activo');if(confirm('¿Eliminar?')){D.clients=D.clients.filter(x=>x.id!=id);save();render()}}function saveLoan(){let m=+lm.value,i=+li.value,q=+lq.value,id=+lc.value;if(!id||m<=0||q<=0)return alert('Completa cliente, monto y cuota');let total=m+m*i/100;D.loans.push({id:Date.now(),clientId:id,amount:m,total,balance:total,quota:q,freq:lf.value,advance:0,active:true});save();render();alert('Préstamo creado')}function openRoute(){if(!rn.value||!rc.value)return alert('Completa ruta y cobrador');D.route={id:Date.now(),name:rn.value,collector:rc.value,date:rd.value||today(),open:true,company:D.company.name};save();render();alert('Ruta abierta')}function closeRoute(){if(!D.route)return alert('No hay ruta abierta');let total=D.payments.filter(x=>x.routeId==D.route.id).reduce((a,x)=>a+x.amount,0);D.closures.push({...D.route,closed:new Date().toLocaleString(),total});D.route=null;save();render();alert('Ruta cerrada. Total: '+money(total))}function payLoan(){let l=D.loans.find(x=>x.id==+pl.value),m=+pm.value;if(!l||m<=0)return alert('Selecciona préstamo y monto');let amount=Math.min(m,l.balance),advance=Math.max(0,amount-l.quota);l.balance=Math.max(0,l.balance-amount);l.advance+=advance;if(!l.balance)l.active=false;let p={id:Date.now(),loanId:l.id,amount,date:new Date().toLocaleString(),routeId:D.route?.id||null,note:pn.value};D.payments.push(p);save();pm.value=pn.value='';render();let c=client(l.clientId);receipt.innerHTML=`<h2>${D.company.name}</h2><p>${D.company.phone} ${D.company.address?'| '+D.company.address:''}</p><hr><h3>RECIBO DE PAGO</h3><p><b>Cliente:</b> ${c?.name||''}</p><p><b>Fecha:</b> ${p.date}</p><p><b>Monto:</b> ${money(amount)}</p><p><b>Saldo:</b> ${money(l.balance)}</p><p><b>Ruta:</b> ${D.route?.name||'Fuera de ruta'}</p>`;modal.classList.remove('hidden')}function backup(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));a.download='respaldo_prestamos_'+today()+'.json';a.click()}function restoreData(e){let f=e.target.files[0],r=new FileReader();r.onload=()=>{try{D=JSON.parse(r.result);save();render();alert('Respaldo restaurado')}catch{alert('Archivo inválido')}};f&&r.readAsText(f)}function render(){brand.textContent='🏢 '+D.company.name;tag.textContent=D.company.slogan;cn.value=D.company.name;ct.value=D.company.phone;cd.value=D.company.address;cs.value=D.company.slogan;clientsList.innerHTML=D.clients.map(x=>`<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td><button onclick="editClient(${x.id})">Editar</button> <button class="danger" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');lc.innerHTML='<option value="">Seleccione cliente</option>'+D.clients.map(x=>`<option value="${x.id}">${x.name}</option>`).join('');loansList.innerHTML=D.loans.map(x=>`<tr><td>${client(x.clientId)?.name||''}</td><td>${money(x.total)}</td><td>${money(x.balance)}</td><td>${money(x.quota)}</td><td>${money(x.advance)}</td><td>${x.active?'Activo':'Pagado'}</td></tr>`).join('');pl.innerHTML='<option value="">Seleccione préstamo</option>'+D.loans.filter(x=>x.active).map(x=>`<option value="${x.id}">${client(x.clientId)?.name||''} — ${money(x.balance)}</option>`).join('');sc.textContent=D.clients.length;sl.textContent=D.loans.filter(x=>x.active).length;sm.textContent=money(D.payments.reduce((a,x)=>a+x.amount,0));ss.textContent=money(D.loans.reduce((a,x)=>a+x.balance,0));if(!rd.value)rd.value=today();if(D.route){routeInfo.innerHTML=`<div class="card"><b>Empresa:</b> ${D.route.company}<br><b>Ruta:</b> ${D.route.name}<br><b>Cobrador:</b> ${D.route.collector}<br><b>Fecha:</b> ${D.route.date}</div>`;routeList.innerHTML=D.loans.filter(x=>x.active).map(x=>{let q=Math.floor(x.advance/x.quota);return `<tr><td>${client(x.clientId)?.name||''}</td><td>${money(x.quota)}</td><td>${money(x.balance)}</td><td>${money(x.advance)}</td><td class="${q?'ok':'warn'}">${q?'Adelantado ('+q+' cuota(s))':'Pendiente'}</td></tr>`}).join('')}else{routeInfo.innerHTML='<p>No hay ruta abierta.</p>';routeList.innerHTML=''}if(D.route){let ps=D.payments.filter(x=>x.routeId==D.route.id),t=ps.reduce((a,x)=>a+x.amount,0);cashBox.innerHTML=`<h3>${D.route.name} — ${D.route.collector}</h3><h2>${money(t)}</h2>`}else cashBox.innerHTML='<p>No hay ruta abierta.</p>';let prest=D.loans.reduce((a,x)=>a+x.amount,0),cob=D.payments.reduce((a,x)=>a+x.amount,0),pend=D.loans.reduce((a,x)=>a+x.balance,0);reportBox.innerHTML=`<div class="grid"><div class="stats">Prestado<br>${money(prest)}</div><div class="stats">Cobrado<br>${money(cob)}</div><div class="stats">Pendiente<br>${money(pend)}</div></div><h3>Rutas cerradas</h3><ul>${D.closures.slice().reverse().map(x=>`<li>${x.date} — ${x.name} — ${money(x.total)}</li>`).join('')||'<li>Aún no hay cierres</li>'}</ul>`}render()</script></body></html>
-function validarAcceso() {
-    const usuarioCorrecto = "admin";  // <--- Aquí pones tu usuario preferido
-    const claveCorrecta = "1234";     // <--- Aquí pones tu contraseña preferida
+<!doctype html>
+<html lang="es">
+<head><!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- AQUÍ PEGAS EL ENCABEZADO -->
+  <title>mi empresaA</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
+  <meta name="theme-color" content="#0d5c3a">
+  <meta name="apple-mobile-web-app-title" content="mi empresaA">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- FIN DEL ENCABEZADO -->
 
-    const userIn = document.getElementById("loginUser").value;
-    const passIn = document.getElementById("loginPass").value;
-    const errorMsg = document.getElementById("loginError");
-
-    if (userIn === usuarioCorrecto && passIn === claveCorrecta) {
-        document.getElementById("loginOverlay").style.display = "none";
-    } else {
-        errorMsg.innerText = "Usuario o contraseña incorrectos";
-        errorMsg.style.display = "block";
+  <style>
+    /* Aquí sigue tu código CSS actual */
+  </style>
+</head>
+<body>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Control de Préstamos</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#f4f6f8;color:#222}
+    header{background:#173f8a;color:#fff;padding:20px;text-align:center}
+    nav{padding:10px;background:#fff;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    button,input,select{padding:10px;border-radius:7px;border:1px solid #ccc;font-size:14px}
+    button{background:#173f8a;color:#fff;border:0;cursor:pointer}
+    .danger{background:#b42318}
+    .secondary{background:#64748b}
+    main{max-width:1150px;margin:auto;padding:15px}
+    .card{background:#fff;padding:18px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
+    .hidden{display:none!important}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .stats{font-size:20px;font-weight:bold;background:#eef2ff;padding:15px;border-radius:10px;text-align:center}
+    .wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th{background:#173f8a;color:#fff}
+    th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;font-size:13px}
+    .warn{color:#b54708;font-weight:bold}
+    .modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:999}
+    .modal>div{background:#fff;padding:20px;border-radius:10px;max-width:320px;width:100%}
+    canvas{border:1px solid #ccc;border-radius:6px;background:#fff;touch-action:none;cursor:crosshair}
+    
+    @media print{
+      body > *:not(#modal){display:none!important}
+      #modal{position:static;background:#fff;padding:0;display:block!important}
+      #modal > div{padding:0;border-radius:0;box-shadow:none;max-width:100%}
+      .no-print{display:none!important}
     }
-}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="brand">🏢 INVERSIONES CRUZ</h1>
+    <p id="tag">Control de préstamos, clientes y rutas</p>
+  </header>
+  
+  <nav>
+    <button onclick="show('home')">Inicio</button>
+    <button onclick="show('company')">Empresa</button>
+    <button onclick="show('workers')">Trabajadores</button>
+    <button onclick="show('clients')">Clientes</button>
+    <button onclick="show('loans')">Préstamos</button>
+    <button onclick="show('route')">Ruta</button>
+    <button onclick="show('pay')">Cobros</button>
+    <button onclick="show('cash')">Caja</button>
+    <button onclick="show('reports')">Reportes</button>
+  </nav>
+
+  <main>
+    <section id="home" class="page card">
+      <button class="secondary no-print" style="float:right;" onclick="imprimirSeccion('home')">🖨️ Imprimir</button>
+      <h2>Resumen</h2>
+      <div class="grid">
+        <div class="stats">Clientes<br><span id="sc">0</span></div>
+        <div class="stats">Préstamos activos<br><span id="sl">0</span></div>
+        <div class="stats">Cobrado<br><span id="sm">RD$0</span></div>
+        <div class="stats">Pendiente<br><span id="ss">RD$0</span></div>
+      </div>
+    </section>
+
+    <section id="company" class="page card hidden">
+      <h2>Empresa</h2>
+      <div class="grid">
+        <input id="cn" placeholder="Nombre de empresa">
+        <input id="ct" placeholder="Teléfono">
+        <input id="cd" placeholder="Dirección">
+        <input id="cs" placeholder="Eslogan">
+        <button onclick="saveCompany()">Guardar</button>
+      </div>
+    </section>
+
+    <!-- PESTAÑA TRABAJADORES -->
+    <section id="workers" class="page card hidden">
+      <h2>Registro de Trabajadores / Cobradores</h2>
+      <input type="hidden" id="editWorkerId">
+      <div class="grid">
+        <input id="wn" placeholder="Nombre completo">
+        <input id="wci" placeholder="Cédula">
+        <input id="wtel" placeholder="Teléfono">
+        <select id="wrole">
+          <option value="Cobrador">Cobrador</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+        <button onclick="saveWorker()">Guardar Trabajador</button>
+        <button class="secondary" onclick="clearWorker()">Cancelar</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Cargo</th><th>Acciones</th></tr></thead>
+          <tbody id="workersList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="clients" class="page card hidden">
+      <button class="secondary no-print" style="float:right;" onclick="imprimirSeccion('clients')">🖨️ Imprimir Lista</button>
+      <h2>Clientes</h2>
+      <input type="hidden" id="edit">
+      <div class="grid">
+        <input id="n" placeholder="Nombre completo">
+        <input id="ci" placeholder="Cédula">
+        <input id="tel" placeholder="Teléfono">
+        <input id="addr" placeholder="Dirección">
+        <input id="cr" placeholder="Ruta asignada">
+        <div>
+          <label style="font-size:11px;display:block;">Foto Cédula:</label>
+          <input type="file" id="fotoCedula" accept="image/*">
+        </div>
+        <button onclick="saveClient()">Guardar cliente</button>
+        <button class="secondary" onclick="clearClient()">Cancelar</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Foto</th><th>Acciones</th></tr></thead>
+          <tbody id="clientsList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="loans" class="page card hidden">
+      <h2>Crear / Registrar Préstamo</h2>
+      <div class="grid">
+        <select id="lc"></select>
+        <input id="lm" type="number" placeholder="Monto Prestado (RD$)">
+        <input id="li" type="number" placeholder="Interés % (ej: 20)">
+        <input id="ltq" type="number" placeholder="Total de cuotas (ej: 13)">
+        <select id="lf">
+          <option>Diaria</option>
+          <option>Semanal</option>
+          <option>Quincenal</option>
+          <option>Mensual</option>
+        </select>
+        <div>
+          <label style="font-size:11px;display:block;">Fecha de inicio / entrega:</label>
+          <input id="ldate" type="date">
+        </div>
+        <div>
+          <label style="font-size:11px;display:block;">Cuotas ya pagadas (Si es antiguo):</label>
+          <input id="lprev" type="number" placeholder="Ej: 3" value="0">
+        </div>
+        <button onclick="saveLoan()" style="grid-column:1/-1;">Guardar Préstamo</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Inicio</th><th>Monto</th><th>Total</th><th>Cuotas</th><th>Saldo</th><th>Estado</th></tr></thead>
+          <tbody id="loansList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="route" class="page card hidden">
+      <button class="secondary no-print" style="float:right;" onclick="imprimirSeccion('route')">🖨️ Imprimir Ruta</button>
+      <h2>Abrir / cerrar ruta</h2>
+      <div class="grid">
+        <input id="rn" placeholder="Nombre de ruta">
+        <select id="rc"></select> <!-- Cobrador desde la lista de Trabajadores -->
+        <input id="rd" type="date">
+        <button onclick="openRoute()">Abrir ruta</button>
+        <button class="danger" onclick="closeRoute()">Cerrar ruta</button>
+      </div>
+      <div id="routeInfo"></div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Cuota Pagada</th><th>Cuota Valor</th><th>Saldo</th><th>Estado</th></tr></thead>
+          <tbody id="routeList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pay" class="page card hidden">
+      <h2>Registrar cobro</h2>
+      <div class="grid">
+        <select id="pl"></select>
+        <input id="pm" type="number" placeholder="Monto a cobrar">
+        <input id="pMora" type="number" placeholder="Mora (Opcional)" value="0">
+        <input id="pn" placeholder="Nota opcional">
+      </div>
+      
+      <div style="margin-top: 15px;">
+        <label style="display:block; font-weight:bold; margin-bottom:5px;">Firma del Cliente (Opcional):</label>
+        <canvas id="canvasFirma" width="280" height="80"></canvas><br>
+        <button type="button" class="secondary" onclick="limpiarFirma()" style="margin-top:5px; padding:4px 8px; font-size:11px;">Limpiar Firma</button>
+      </div>
+
+      <button onclick="payLoan()" style="margin-top:15px; width:100%; background:#137333; font-size:16px;">Generar Recibo</button>
+    </section>
+
+    <section id="cash" class="page card hidden">
+      <button class="secondary no-print" style="float:right;" onclick="imprimirSeccion('cash')">🖨️ Imprimir Caja</button>
+      <h2>Caja diaria</h2>
+      <div id="cashBox"></div>
+    </section>
+
+    <section id="reports" class="page card hidden">
+      <button class="secondary no-print" style="float:right;" onclick="imprimirSeccion('reports')">🖨️ Imprimir Reportes</button>
+      <h2>Reportes y respaldo</h2>
+      <div id="reportBox"></div>
+      <br>
+      <button onclick="backup()">Descargar respaldo</button>
+      <button class="secondary" onclick="restore.click()">Restaurar respaldo</button>
+      <input id="restore" class="hidden" type="file" accept=".json" onchange="restoreData(event)">
+    </section>
+  </main>
+
+  <div id="modal" class="hidden modal">
+    <div>
+      <div id="receiptContent"></div>
+      
+      <div class="no-print" style="margin-top:15px; display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
+        <button onclick="window.print()" style="background:#137333; flex:1; font-size:14px;">🖨️ Imprimir</button>
+        <button onclick="enviarWhatsApp()" style="background:#25D366; color:#fff; flex:1; font-size:14px;">💬 WhatsApp</button>
+        <button class="secondary" onclick="cerrarModal()" style="width:100%; margin-top:5px;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"INVERSIONES CRUZ","phone":"","address":"","slogan":"Control de préstamos"},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
+    if (!D.workers) D.workers = [];
+
+    const $ = id => document.getElementById(id),
+          money = x => 'RD$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
+          save = () => localStorage.setItem('loanapp', JSON.stringify(D)),
+          today = () => new Date().toISOString().slice(0, 10),
+          client = id => D.clients.find(x => x.id == id);
+
+    function cerrarModal() { $('modal').classList.add('hidden'); }
+
+    let tieneFirma = false;
+    const canvas = $('canvasFirma');
+    const ctx = canvas.getContext('2d');
+    let dibujando = false;
+
+    canvas.addEventListener('mousedown', () => { dibujando = true; tieneFirma = true; });
+    canvas.addEventListener('mouseup', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('mousemove', (e) => {
+      if (!dibujando) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#000';
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener('touchstart', (e) => { dibujando = true; tieneFirma = true; e.preventDefault(); });
+    canvas.addEventListener('touchend', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('touchmove', (e) => {
+      if (!dibujando) return;
+      const touch = e.touches[0]; const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#000';
+      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      ctx.stroke(); ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+
+    function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); tieneFirma = false; }
+
+    function show(id) {
+      document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
+      $(id).classList.remove('hidden');
+      render();
+    }
+
+    function saveCompany() {
+      D.company = { name: cn.value || D.company.name, phone: ct.value, address: cd.value, slogan: cs.value || '' };
+      save(); render(); alert('Empresa guardada');
+    }
+
+    // GESTIÓN DE TRABAJADORES
+    function saveWorker() {
+      let id = +editWorkerId.value;
+      let w = { id: id || Date.now(), name: wn.value, ci: wci.value, tel: wtel.value, role: wrole.value };
+      if (!w.name) return alert('Escribe el nombre del trabajador');
+      
+      id ? D.workers = D.workers.map(x => x.id == id ? w : x) : D.workers.push(w);
+      save(); clearWorker(); render();
+    }
+
+    function clearWorker() {
+      editWorkerId.value = wn.value = wci.value = wtel.value = '';
+      wrole.value = 'Cobrador';
+    }
+
+    function editWorker(id) {
+      let w = D.workers.find(x => x.id == id);
+      editWorkerId.value = w.id; wn.value = w.name; wci.value = w.ci; wtel.value = w.tel; wrole.value = w.role;
+      show('workers');
+    }
+
+    function delWorker(id) {
+      if (confirm('¿Eliminar trabajador?')) { D.workers = D.workers.filter(x => x.id != id); save(); render(); }
+    }
+
+    async function saveClient() {
+      let id = +edit.value;
+      let fotoInput = $('fotoCedula');
+      let fotoBase64 = null;
+
+      if (fotoInput.files && fotoInput.files[0]) {
+        fotoBase64 = await new Promise((resolve) => {
+          let r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.readAsDataURL(fotoInput.files[0]);
+        });
+      }
+
+      let clienteExistente = client(id);
+      let o = {
+        id: id || Date.now(),
+        name: n.value, ci: ci.value, tel: tel.value, addr: addr.value, route: cr.value,
+        foto: fotoBase64 || (clienteExistente ? clienteExistente.foto : null)
+      };
+
+      if (!o.name) return alert('Escribe el nombre');
+      id ? D.clients = D.clients.map(x => x.id == id ? o : x) : D.clients.push(o);
+      save(); clearClient(); render();
+    }
+
+    function clearClient() {
+      edit.value = n.value = ci.value = tel.value = addr.value = cr.value = '';
+      $('fotoCedula').value = '';
+    }
+
+    function editClient(id) {
+      let x = client(id);
+      edit.value = x.id; n.value = x.name; ci.value = x.ci; tel.value = x.tel; addr.value = x.addr; cr.value = x.route;
+      show('clients');
+    }
+
+    function delClient(id) {
+      if (D.loans.some(x => x.clientId == id && x.active)) return alert('No puedes eliminarlo: tiene préstamo activo');
+      if (confirm('¿Eliminar?')) { D.clients = D.clients.filter(x => x.id != id); save(); render(); }
+    }
+
+    function saveLoan() {
+      let m = +lm.value, i = +li.value, tq = +ltq.value, id = +lc.value, fecha = ldate.value || today(), prev = +lprev.value || 0;
+      if (!id || m <= 0 || tq <= 0) return alert('Completa cliente, monto y total de cuotas');
+      
+      let total = m + (m * i / 100);
+      let quotaVal = Math.round(total / tq);
+      let paidBefore = prev * quotaVal;
+      let balance = Math.max(0, total - paidBefore);
+
+      D.loans.push({
+        id: Math.floor(100000 + Math.random() * 900000),
+        clientId: id, amount: m, total, balance, quota: quotaVal, totalQuotas: tq, paidQuotas: prev,
+        freq: lf.value, date: fecha, active: balance > 0
+      });
+      save(); render(); alert('Préstamo registrado');
+      lm.value = li.value = ltq.value = lprev.value = '';
+    }
+
+    function openRoute() {
+      if (!rn.value || !rc.value) return alert('Completa la ruta y selecciona un cobrador');
+      D.route = { id: Date.now(), name: rn.value, collector: rc.value, date: rd.value || today(), company: D.company.name };
+      save(); render(); alert('Ruta abierta');
+    }
+
+    function closeRoute() {
+      if (!D.route) return alert('No hay ruta abierta');
+      let total = D.payments.filter(x => x.routeId == D.route.id).reduce((a, x) => a + (x.total || x.amount), 0);
+      D.closures.push({ ...D.route, closed: new Date().toLocaleString(), total });
+      D.route = null; save(); render(); alert('Ruta cerrada. Total: ' + money(total));
+    }
+
+    function payLoan() {
+      let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0;
+      if (!l || m <= 0) return alert('Selecciona préstamo y monto');
+
+      let cuotasCobradas = Math.max(1, Math.round(m / l.quota));
+      l.paidQuotas += cuotasCobradas;
+      l.balance = Math.max(0, l.balance - m);
+      if (l.balance <= 0) l.active = false;
+
+      let p = {
+        id: Date.now(),
+        ticket: Math.floor(1000000000 + Math.random() * 9000000000),
+        loanId: l.id, amount: m, mora, total: m + mora,
+        date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        routeId: D.route?.id || null, note: pn.value, firma: tieneFirma ? canvas.toDataURL() : null,
+        numCuota: `${l.paidQuotas}/${l.totalQuotas}`
+      };
+
+      D.payments.push(p);
+      save(); pm.value = pn.value = pMora.value = '';
+      limpiarFirma(); render();
+
+      let c = client(l.clientId);
+
+      $('receiptContent').innerHTML = `
+        <div style="width: 100%; font-family: monospace; font-size: 11px; text-align: center; color: #000; line-height: 1.3;">
+          <p style="margin: 2px 0; font-size: 13px; font-weight: bold;">RECIBO DE PAGO!</p>
+          <p style="margin: 2px 0; font-size: 10px;">${p.date}</p>
+          <p style="margin: 4px 0;">--------------------------------</p>
+          
+          <p style="margin: 2px 0; font-size: 14px; font-weight: bold;">${D.company.name || 'INVERSIONES CRUZ'}</p>
+          <p style="margin: 2px 0;">Cobrado por: ${D.route?.collector || 'Oficina'}</p>
+          <p style="margin: 2px 0;">Tel: ${D.company.phone || ''}</p>
+          <p style="margin: 4px 0;">--------------------------------</p>
+
+          <div style="text-align: left; margin: 5px 0;">
+            <p style="margin: 4px 0; font-size: 13px; font-weight: bold;">${c?.name || ''}</p>
+            <p style="margin: 2px 0;">Ticket . : #${p.ticket}</p>
+            <p style="margin: 2px 0;">Prestamo No. : P${l.id}</p>
+            <p style="margin: 2px 0;">Cantidad Prestada : ${money(l.amount)}</p>
+            <p style="margin: 2px 0;">Ent: ${l.date}</p>
+            <p style="margin: 6px 0 2px 0;"><b>Cuota Pagada ...${p.numCuota}:</b> ${money(p.amount)}</p>
+            ${mora > 0 ? `<p style="margin: 2px 0;"><b>Mora:</b> ${money(mora)}</p>` : ''}
+            <p style="margin: 2px 0; font-size: 12px;"><b>Total Monto Pagado: ${money(p.total)}</b></p>
+            <p style="margin: 6px 0; font-size: 13px;"><b>Balance: ${money(l.balance)}</b></p>
+          </div>
+
+          <p style="margin: 6px 0 2px 0; font-weight: bold;">SIN RECIBO, NO HAY RECLAMOS!</p>
+          <p style="font-size: 8px; margin-top: 2px;">En caso de incumplimiento, sus datos serán procesados a data.</p>
+
+          ${p.firma ? `<div style="margin-top:10px;"><img src="${p.firma}" style="width:110px; height:45px; border-bottom:1px solid #000;"><br><span style="font-size:8px;">Firma Cliente</span></div>` : ''}
+        </div>
+      `;
+      $('modal').classList.remove('hidden');
+    }
+
+    function enviarWhatsApp() {
+      let p = D.payments[D.payments.length - 1]; 
+      if (!p) return alert("No hay pago reciente.");
+      let l = D.loans.find(x => x.id == p.loanId);
+      let c = client(l?.clientId);
+      if (!c || !c.tel) return alert("El cliente no tiene teléfono.");
+
+      let telefono = c.tel.replace(/\D/g, ''); 
+      let mensaje = `*${D.company.name || 'INVERSIONES CRUZ'}*%0A` +
+        `*RECIBO DE PAGO!*%0A` +
+        `Fecha: ${p.date}%0A` +
+        `--------------------------------%0A` +
+        `*Cliente:* ${c.name}%0A` +
+        `*Prestamo No.:* P${l.id}%0A` +
+        `*Cantidad Prestada:* ${money(l.amount)}%0A` +
+        `*Cuota Pagada (${p.numCuota}):* ${money(p.amount)}%0A` +
+        `*TOTAL PAGADO:* ${money(p.total)}%0A` +
+        `*Balance:* ${money(l.balance)}%0A` +
+        `--------------------------------%0A` +
+        `_SIN RECIBO, NO HAY RECLAMOS!_`;
+
+      window.open(`https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`, '_blank');
+    }
+
+    function imprimirSeccion(id) {
+      let contenido = $(id).innerHTML;
+      let win = window.open('', '', 'width=700,height=600');
+      win.document.write(`<html><head><title>Imprimir</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;} button,.secondary,.danger,.no-print{display:none!important;}</style></head><body>${contenido}</body></html>`);
+      win.document.close(); win.focus();
+      setTimeout(() => { win.print(); win.close(); }, 300);
+    }
+
+    function backup() {
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' }));
+      a.download = 'respaldo_prestamos_' + today() + '.json';
+      a.click();
+    }
+
+    function restoreData(e) {
+      let f = e.target.files[0], r = new FileReader();
+      r.onload = () => { try { D = JSON.parse(r.result); save(); render(); alert('Respaldo restaurado'); } catch { alert('Archivo inválido'); } };
+      f && r.readAsText(f);
+    }
+
+    function render() {
+      brand.textContent = '🏢 ' + D.company.name;
+      tag.textContent = D.company.slogan;
+      cn.value = D.company.name; ct.value = D.company.phone; cd.value = D.company.address; cs.value = D.company.slogan;
+
+      // TABLA TRABAJADORES
+      workersList.innerHTML = D.workers.map(x => `
+        <tr>
+          <td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.role}</td>
+          <td><button onclick="editWorker(${x.id})">Editar</button> <button class="danger" onclick="delWorker(${x.id})">Eliminar</button></td>
+        </tr>
+      `).join('');
+
+      // LISTA COBRADORES EN LA RUTA
+      rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name} (${x.role})</option>`).join('');
+
+      clientsList.innerHTML = D.clients.map(x => `
+        <tr>
+          <td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.foto ? '✅' : '❌'}</td>
+          <td><button onclick="editClient(${x.id})">Editar</button> <button class="danger" onclick="delClient(${x.id})">Eliminar</button></td>
+        </tr>
+      `).join('');
+
+      lc.innerHTML = '<option value="">Seleccione cliente</option>' + D.clients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+      loansList.innerHTML = D.loans.map(x => `
+        <tr>
+          <td>${client(x.clientId)?.name || ''}</td><td>${x.date || '-'}</td><td>${money(x.amount)}</td><td>${money(x.total)}</td>
+          <td>${x.paidQuotas}/${x.totalQuotas}</td><td>${money(x.balance)}</td><td>${x.active ? 'Activo' : 'Pagado'}</td>
+        </tr>
+      `).join('');
+
+      pl.innerHTML = '<option value="">Seleccione préstamo</option>' + D.loans.filter(x => x.active).map(x => `<option value="${x.id}">${client(x.clientId)?.name || ''} — Balance: ${money(x.balance)}</option>`).join('');
+
+      sc.textContent = D.clients.length;
+      sl.textContent = D.loans.filter(x => x.active).length;
+      sm.textContent = money(D.payments.reduce((a, x) => a + (x.total || x.amount), 0));
+      ss.textContent = money(D.loans.reduce((a, x) => a + x.balance, 0));
+
+      if (!rd.value) rd.value = today();
+      if (!ldate.value) ldate.value = today();
+
+      if (D.route) {
+        routeInfo.innerHTML = `<div class="card"><b>Empresa:</b> ${D.route.company} | <b>Ruta:</b> ${D.route.name} | <b>Cobrador:</b> ${D.route.collector}</div>`;
+        routeList.innerHTML = D.loans.filter(x => x.active).map(x => `
+          <tr>
+            <td>${client(x.clientId)?.name || ''}</td>
+            <td>${x.paidQuotas}/${x.totalQuotas}</td>
+            <td>${money(x.quota)}</td>
+            <td>${money(x.balance)}</td>
+            <td class="warn">Pendiente</td>
+          </tr>
+        `).join('');
+      } else {
+        routeInfo.innerHTML = '<p>No hay ruta abierta.</p>';
+        routeList.innerHTML = '';
+      }
+
+      if (D.route) {
+        let ps = D.payments.filter(x => x.routeId == D.route.id), t = ps.reduce((a, x) => a + (x.total || x.amount), 0);
+        cashBox.innerHTML = `<h3>${D.route.name} — ${D.route.collector}</h3><h2>${money(t)}</h2>`;
+      } else {
+        cashBox.innerHTML = '<p>No hay ruta abierta.</p>';
+      }
+
+      reportBox.innerHTML = `
+        <div class="grid">
+          <div class="stats">Prestado<br>${money(D.loans.reduce((a, x) => a + x.amount, 0))}</div>
+          <div class="stats">Cobrado<br>${money(D.payments.reduce((a, x) => a + (x.total || x.amount), 0))}</div>
+          <div class="stats">Pendiente<br>${money(D.loans.reduce((a, x) => a + x.balance, 0))}</div>
+        </div>
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>
