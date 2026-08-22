@@ -1,12 +1,8 @@
 <!doctype html>
 <html lang="es">
-<head><!doctype html>
-<html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- AQUÍ PEGAS EL ENCABEZADO -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>mi empresaA</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
@@ -14,22 +10,13 @@
   <meta name="theme-color" content="#0d5c3a">
   <meta name="apple-mobile-web-app-title" content="mi empresaA">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- FIN DEL ENCABEZADO -->
-
-  <style>
-    /* Aquí sigue tu código CSS actual */
-  </style>
-</head>
-<body>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Control de Préstamos</title>
   <style>
     body{font-family:Arial,sans-serif;margin:0;background:#f4f6f8;color:#222}
-    header{background:#173f8a;color:#fff;padding:20px;text-align:center}
+    header{background:#0d5c3a;color:#fff;padding:15px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+    .header-logo{width:65px;height:65px;object-fit:contain;background:#fff;padding:4px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2)}
     nav{padding:10px;background:#fff;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
     button,input,select{padding:10px;border-radius:7px;border:1px solid #ccc;font-size:14px}
-    button{background:#173f8a;color:#fff;border:0;cursor:pointer}
+    button{background:#0d5c3a;color:#fff;border:0;cursor:pointer}
     .danger{background:#b42318}
     .secondary{background:#64748b}
     main{max-width:1150px;margin:auto;padding:15px}
@@ -39,7 +26,7 @@
     .stats{font-size:20px;font-weight:bold;background:#eef2ff;padding:15px;border-radius:10px;text-align:center}
     .wrap{overflow:auto}
     table{width:100%;border-collapse:collapse;margin-top:10px}
-    th{background:#173f8a;color:#fff}
+    th{background:#0d5c3a;color:#fff}
     th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;font-size:13px}
     .warn{color:#b54708;font-weight:bold}
     .modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:999}
@@ -56,8 +43,11 @@
 </head>
 <body>
   <header>
-    <h1 id="brand">🏢 INVERSIONES CRUZ</h1>
-    <p id="tag">Control de préstamos, clientes y rutas</p>
+    <img id="appLogo" class="header-logo" src="logo.svg" alt="Logo">
+    <div>
+      <h1 id="brand" style="margin:0;font-size:24px;">mi empresaA</h1>
+      <p id="tag" style="margin:4px 0 0 0;font-size:13px;opacity:0.9;">Control de préstamos, clientes y rutas</p>
+    </div>
   </header>
   
   <nav>
@@ -85,17 +75,20 @@
     </section>
 
     <section id="company" class="page card hidden">
-      <h2>Empresa</h2>
+      <h2>Configuración de la Empresa</h2>
       <div class="grid">
         <input id="cn" placeholder="Nombre de empresa">
         <input id="ct" placeholder="Teléfono">
         <input id="cd" placeholder="Dirección">
         <input id="cs" placeholder="Eslogan">
-        <button onclick="saveCompany()">Guardar</button>
+        <div>
+          <label style="font-size:11px;display:block;">Cambiar Logo Personalizado:</label>
+          <input type="file" id="logoInput" accept="image/*">
+        </div>
+        <button onclick="saveCompany()" style="grid-column:1/-1;">Guardar Cambios</button>
       </div>
     </section>
 
-    <!-- PESTAÑA TRABAJADORES -->
     <section id="workers" class="page card hidden">
       <h2>Registro de Trabajadores / Cobradores</h2>
       <input type="hidden" id="editWorkerId">
@@ -180,7 +173,7 @@
       <h2>Abrir / cerrar ruta</h2>
       <div class="grid">
         <input id="rn" placeholder="Nombre de ruta">
-        <select id="rc"></select> <!-- Cobrador desde la lista de Trabajadores -->
+        <select id="rc"></select>
         <input id="rd" type="date">
         <button onclick="openRoute()">Abrir ruta</button>
         <button class="danger" onclick="closeRoute()">Cerrar ruta</button>
@@ -209,7 +202,7 @@
         <button type="button" class="secondary" onclick="limpiarFirma()" style="margin-top:5px; padding:4px 8px; font-size:11px;">Limpiar Firma</button>
       </div>
 
-      <button onclick="payLoan()" style="margin-top:15px; width:100%; background:#137333; font-size:16px;">Generar Recibo</button>
+      <button onclick="payLoan()" style="margin-top:15px; width:100%; background:#0d5c3a; font-size:16px;">Generar Recibo</button>
     </section>
 
     <section id="cash" class="page card hidden">
@@ -234,7 +227,7 @@
       <div id="receiptContent"></div>
       
       <div class="no-print" style="margin-top:15px; display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
-        <button onclick="window.print()" style="background:#137333; flex:1; font-size:14px;">🖨️ Imprimir</button>
+        <button onclick="window.print()" style="background:#0d5c3a; flex:1; font-size:14px;">🖨️ Imprimir</button>
         <button onclick="enviarWhatsApp()" style="background:#25D366; color:#fff; flex:1; font-size:14px;">💬 WhatsApp</button>
         <button class="secondary" onclick="cerrarModal()" style="width:100%; margin-top:5px;">Cerrar</button>
       </div>
@@ -242,7 +235,8 @@
   </div>
 
   <script>
-    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"INVERSIONES CRUZ","phone":"","address":"","slogan":"Control de préstamos"},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
+    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"mi empresaA","phone":"","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
+    if (!D.company.name) D.company.name = "mi empresaA";
     if (!D.workers) D.workers = [];
 
     const $ = id => document.getElementById(id),
@@ -286,12 +280,28 @@
       render();
     }
 
-    function saveCompany() {
-      D.company = { name: cn.value || D.company.name, phone: ct.value, address: cd.value, slogan: cs.value || '' };
-      save(); render(); alert('Empresa guardada');
+    async function saveCompany() {
+      let logoInput = $('logoInput');
+      let logoBase64 = D.company.logo;
+
+      if (logoInput.files && logoInput.files[0]) {
+        logoBase64 = await new Promise((resolve) => {
+          let r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.readAsDataURL(logoInput.files[0]);
+        });
+      }
+
+      D.company = { 
+        name: cn.value || "mi empresaA", 
+        phone: ct.value, 
+        address: cd.value, 
+        slogan: cs.value || 'Control de préstamos',
+        logo: logoBase64
+      };
+      save(); render(); alert('Datos guardados');
     }
 
-    // GESTIÓN DE TRABAJADORES
     function saveWorker() {
       let id = +editWorkerId.value;
       let w = { id: id || Date.now(), name: wn.value, ci: wci.value, tel: wtel.value, role: wrole.value };
@@ -418,7 +428,7 @@
           <p style="margin: 2px 0; font-size: 10px;">${p.date}</p>
           <p style="margin: 4px 0;">--------------------------------</p>
           
-          <p style="margin: 2px 0; font-size: 14px; font-weight: bold;">${D.company.name || 'INVERSIONES CRUZ'}</p>
+          <p style="margin: 2px 0; font-size: 14px; font-weight: bold;">${D.company.name || 'mi empresaA'}</p>
           <p style="margin: 2px 0;">Cobrado por: ${D.route?.collector || 'Oficina'}</p>
           <p style="margin: 2px 0;">Tel: ${D.company.phone || ''}</p>
           <p style="margin: 4px 0;">--------------------------------</p>
@@ -452,7 +462,7 @@
       if (!c || !c.tel) return alert("El cliente no tiene teléfono.");
 
       let telefono = c.tel.replace(/\D/g, ''); 
-      let mensaje = `*${D.company.name || 'INVERSIONES CRUZ'}*%0A` +
+      let mensaje = `*${D.company.name || 'mi empresaA'}*%0A` +
         `*RECIBO DE PAGO!*%0A` +
         `Fecha: ${p.date}%0A` +
         `--------------------------------%0A` +
@@ -490,11 +500,12 @@
     }
 
     function render() {
-      brand.textContent = '🏢 ' + D.company.name;
-      tag.textContent = D.company.slogan;
+      brand.textContent = D.company.name || "mi empresaA";
+      tag.textContent = D.company.slogan || "Control de préstamos";
+      if (D.company.logo) $('appLogo').src = D.company.logo;
+
       cn.value = D.company.name; ct.value = D.company.phone; cd.value = D.company.address; cs.value = D.company.slogan;
 
-      // TABLA TRABAJADORES
       workersList.innerHTML = D.workers.map(x => `
         <tr>
           <td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.role}</td>
@@ -502,7 +513,6 @@
         </tr>
       `).join('');
 
-      // LISTA COBRADORES EN LA RUTA
       rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name} (${x.role})</option>`).join('');
 
       clientsList.innerHTML = D.clients.map(x => `
