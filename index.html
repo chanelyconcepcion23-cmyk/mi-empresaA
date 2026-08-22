@@ -30,7 +30,7 @@
     th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;font-size:13px}
     .warn{color:#b54708;font-weight:bold}
     .modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:999}
-    .modal>div{background:#fff;padding:20px;border-radius:10px;max-width:340px;width:100%}
+    .modal>div{background:#fff;padding:20px;border-radius:10px;max-width:360px;width:100%}
     canvas{border:1px solid #ccc;border-radius:6px;background:#fff;touch-action:none;cursor:crosshair}
     
     @media print{
@@ -410,7 +410,14 @@
       let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0;
       if (!l || m <= 0) return alert('Selecciona préstamo y monto');
 
+      // Cálculo de cuotas pagadas
       let cuotasCobradas = Math.max(1, Math.round(m / l.quota));
+      let cuotasDetalle = [];
+      
+      for (let i = 1; i <= cuotasCobradas; i++) {
+        cuotasDetalle.push(l.paidQuotas + i);
+      }
+
       l.paidQuotas += cuotasCobradas;
       l.balance = Math.max(0, l.balance - m);
       if (l.balance <= 0) l.active = false;
@@ -421,7 +428,9 @@
         loanId: l.id, amount: m, mora, total: m + mora,
         date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
         routeId: D.route?.id || null, note: pn.value, firma: tieneFirma ? canvas.toDataURL() : null,
-        numCuota: `${l.paidQuotas}/${l.totalQuotas}`
+        numCuota: `${l.paidQuotas}/${l.totalQuotas}`,
+        cuotasLista: cuotasDetalle,
+        montoPorCuota: l.quota
       };
 
       D.payments.push(p);
@@ -431,62 +440,74 @@
       let c = client(l.clientId);
       let cobradorActual = D.workers.find(w => w.name === D.route?.collector) || {};
 
+      // Generar desglose de cuotas
+      let desgloseHTML = "";
+      if (p.cuotasLista.length > 1) {
+        desgloseHTML = `<div style="margin: 6px 0; color: #222222; font-size: 14px;"><b>Cuotas Pagadas Juntas:</b><br>`;
+        p.cuotasLista.forEach(num => {
+          desgloseHTML += `• Cuota #${num}: <b>${money(p.montoPorCuota)}</b><br>`;
+        });
+        desgloseHTML += `</div>`;
+      } else {
+        desgloseHTML = `<div style="color: #222222; font-size: 15px; margin: 4px 0;">Cuota Pagada ...<b>#${p.cuotasLista[0]}</b>: <b>${money(p.amount)}</b></div>`;
+      }
+
       $('receiptContent').innerHTML = `
-        <div style="width: 100%; font-family: 'Courier New', monospace; font-size: 13px; text-align: left; color: #000; line-height: 1.35;">
-          <div style="text-align: center; font-size: 11px;">Testing PDF417: (Experimental)</div>
+        <div style="width: 100%; font-family: 'Courier New', monospace; font-size: 14px; text-align: left; color: #111111; line-height: 1.4;">
           
-          <div style="text-align: center; margin-top: 8px;">
-            <div style="font-size: 18px; font-weight: 900;">RECIBO DE PAGO!</div>
-            <div style="font-size: 12px;">${p.date}</div>
+          <div style="text-align: center; margin-top: 5px;">
+            <div style="font-size: 20px; font-weight: 900; color: #000000;">RECIBO DE PAGO!</div>
+            <div style="font-size: 13px; color: #333333;">${p.date}</div>
           </div>
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div style="text-align: center;">
-            <strong style="font-size: 22px; text-transform: uppercase; display: block; font-weight: 900;">${D.company.name || 'INVERSIONES CRUZ'}</strong>
-            Zona: ${c?.route || D.route?.name || 'G. Mella'}<br>
-            Cobrado por: ${D.route?.collector || 'Emmanuel'}<br>
-            ${cobradorActual.tel || D.company.phone || '(829) 462-0598 / (849) 286-3988'}
+          <!-- EMPRESA EN GRANDE -->
+          <div style="text-align: center; color: #222222;">
+            <strong style="font-size: 26px; text-transform: uppercase; display: block; font-weight: 900; color: #000000; letter-spacing: 1px; margin-bottom: 4px;">${D.company.name || 'INVERSIONES CRUZ'}</strong>
+            Zona: <b>${c?.route || D.route?.name || 'G. Mella'}</b><br>
+            Cobrado por: <b>${D.route?.collector || 'Emmanuel'}</b><br>
+            Tel: <b>${cobradorActual.tel || D.company.phone || '(829) 462-0598 / (849) 286-3988'}</b>
           </div>
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div style="text-align: right; font-size: 12px;">Fecha: ${new Date().getDate()}-${new Date().toLocaleString('es-DO', {month: 'short'})}-${new Date().getFullYear().toString().slice(-2)}</div>
-
-          <div style="font-size: 20px; font-weight: 900; margin: 8px 0 4px 0; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 2px;">${c?.name || ''}</div>
-          <div>Ticket . : ${p.ticket}</div>
-          <div>Prestamo No. : P${l.id}</div>
-          <div>Cantidad Prestada ${money(l.amount)}</div>
-          <div>Ent: ${l.date || 'N/A'} Ter: ${l.endDate || 'N/A'}</div>
+          <!-- CLIENTE DESTACADO Y BIEN GRANDE -->
+          <div style="font-size: 14px; color: #222222;">
+            <div style="margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 4px;">
+              <span style="font-size: 12px; font-weight: bold; color: #444; display: block;">CLIENTE:</span>
+              <span style="font-size: 24px; font-weight: 900; text-transform: uppercase; color: #000000; display: block; line-height: 1.1;">${c?.name || ''}</span>
+            </div>
+            <div><b>Ticket . :</b> ${p.ticket}</div>
+            <div><b>Préstamo No. :</b> P${l.id}</div>
+            <div><b>Monto Prestado:</b> ${money(l.amount)}</div>
+            <div><b>Inicio:</b> ${l.date || 'N/A'} | <b>Fin:</b> ${l.endDate || 'N/A'}</div>
+          </div>
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div>Cuota Pagada ...${p.numCuota}: ${money(p.amount)}</div>
-          ${mora > 0 ? `<div>Mora: ${money(mora)}</div>` : ''}
+          ${desgloseHTML}
+          ${mora > 0 ? `<div style="color: #222222;">Mora: <b>${money(mora)}</b></div>` : ''}
 
-          <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 6px; font-size: 14px;">
-            <span>Total Monto Pagado:</span>
+          <div style="display: flex; justify-content: space-between; font-weight: 900; margin-top: 6px; font-size: 16px; color: #000000; border-top: 1px solid #000; padding-top: 4px;">
+            <span>TOTAL MONTO PAGADO:</span>
             <span>${money(p.total)}</span>
           </div>
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div style="font-size: 20px; font-weight: 900; margin: 8px 0;">
-            Balance: ${money(l.balance)}
+          <div style="font-size: 18px; font-weight: 900; color: #000000; margin: 6px 0;">
+            BALANCE RESTANTE: ${money(l.balance)}
           </div>
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div style="text-align: center; font-size: 11px; margin-top: 8px;">
-            <b>SIN RECIBO, NO HAY RECLAMOS!</b><br><br>
-            En caso de incumplimiento, sus credito!datos seran procesados a data
+          <div style="text-align: center; font-size: 13px; margin-top: 8px; color: #111111;">
+            <b style="font-size: 14px; color: #000000;">⚠️ SIN RECIBO, NO HAY RECLAMOS!</b><br>
+            <span>Conserve este comprobante de pago como soporte legal.</span>
           </div>
 
-          <div style="text-align: center; font-size: 9px; margin-top: 10px; color: #444;">
-            Using Android App<br>BT Printer
-          </div>
-
-          ${p.firma ? `<div style="margin-top:10px; text-align:center;"><img src="${p.firma}" style="width:110px; height:45px; border-bottom:1px solid #000;"><br><span style="font-size:8px;">Firma Cliente</span></div>` : ''}
+          ${p.firma ? `<div style="margin-top:12px; text-align:center;"><img src="${p.firma}" style="width:120px; height:50px; border-bottom:1px solid #000;"><br><span style="font-size:11px; font-weight: bold; color: #000;">Firma del Cliente</span></div>` : ''}
         </div>
       `;
       $('modal').classList.remove('hidden');
@@ -500,19 +521,24 @@
       if (!c || !c.tel) return alert("El cliente no tiene teléfono.");
 
       let telefono = c.tel.replace(/\D/g, ''); 
+      
+      let cuotasTexto = p.cuotasLista.length > 1 
+        ? `*Cuotas Pagadas (${p.cuotasLista.length} Juntas):* #${p.cuotasLista.join(', #')}` 
+        : `*Cuota Pagada:* #${p.cuotasLista[0]}`;
+
       let mensaje = `*${D.company.name || 'INVERSIONES CRUZ'}*%0A` +
         `*RECIBO DE PAGO!*%0A` +
         `Fecha: ${p.date}%0A` +
         `--------------------------------%0A` +
         `*CLIENTE:* ${c.name}%0A` +
         `*Ticket . :* ${p.ticket}%0A` +
-        `*Prestamo No.:* P${l.id}%0A` +
-        `*Cantidad Prestada:* ${money(l.amount)}%0A` +
-        `*Cuota Pagada (${p.numCuota}):* ${money(p.amount)}%0A` +
+        `*Préstamo No.:* P${l.id}%0A` +
+        `*Monto Prestado:* ${money(l.amount)}%0A` +
+        `${cuotasTexto}%0A` +
         `*TOTAL MONTO PAGADO:* ${money(p.total)}%0A` +
-        `*BALANCE:* ${money(l.balance)}%0A` +
+        `*BALANCE RESTANTE:* ${money(l.balance)}%0A` +
         `--------------------------------%0A` +
-        `_SIN RECIBO, NO HAY RECLAMOS!_`;
+        `_⚠️ SIN RECIBO, NO HAY RECLAMOS!_`;
 
       window.open(`https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`, '_blank');
     }
