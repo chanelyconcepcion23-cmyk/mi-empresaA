@@ -1,137 +1,190 @@
-<!doctype html>
-<html lang="es">
-<head><!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- AQUÍ PEGAS EL ENCABEZADO -->
-  <title>mi empresaA</title>
+  <title>Acceso - mi empresaA</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link rel="apple-touch-icon" href="logo.svg">
   <meta name="theme-color" content="#0d5c3a">
-  <meta name="apple-mobile-web-app-title" content="mi empresaA">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- FIN DEL ENCABEZADO -->
-
-  <style>
-    /* Aquí sigue tu código CSS actual */
-  </style>
-</head>
-<body>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Acceso - Sistema de Préstamos</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #173f8a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-    .box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.25); width: 320px; text-align: center; }
-    h2 { margin-top: 0; color: #173f8a; font-size: 22px; }
-    .input-group { position: relative; margin: 10px 0; }
-    input { width: 100%; padding: 10px 35px 10px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-    .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 14px; user-select: none; }
-    button { width: 100%; padding: 12px; background: #173f8a; color: white; border: 0; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
-    button:hover { background: #102d66; }
-    .link { font-size: 13px; color: #173f8a; cursor: pointer; margin-top: 15px; display: inline-block; text-decoration: underline; font-weight: bold; }
-    .hidden { display: none !important; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #0d5c3a 0%, #073823 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .logo {
+      width: 75px;
+      height: 75px;
+      margin-bottom: 10px;
+      background: #fff;
+      padding: 5px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    h2 { margin: 0 0 5px 0; color: #0d5c3a; }
+    p { margin: 0 0 20px 0; color: #666; font-size: 13px; }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #0d5c3a; }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0d5c3a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    button:hover { background: #09442a; }
+    .toggle {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #0d5c3a;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .hidden { display: none; }
+    .auth-field {
+      background: #fdf2e9;
+      border: 1px dashed #e67e22;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <!-- FORMULARIO INICIAR SESIÓN -->
-    <form id="fLogin">
-      <h2>Iniciar Sesión</h2>
-      <div class="input-group">
-        <input id="user" placeholder="Usuario" required>
+  <div class="card">
+    <img src="logo.svg" class="logo" alt="Logo">
+    <h2 id="title">Iniciar Sesión</h2>
+    <p id="subtitle">Sistema de Control - mi empresaA</p>
+
+    <!-- FORMULARIO DE LOGIN -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="loginUser" required placeholder="Ingresa tu usuario">
       </div>
-      <div class="input-group">
-        <input id="pass" type="password" placeholder="Contraseña" required>
-        <span class="toggle-pass" onclick="togglePass('pass')">👁️</span>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPass" required placeholder="Ingresa tu contraseña">
       </div>
       <button type="submit">Entrar</button>
-      <span class="link" onclick="toggleView()">¿No tienes cuenta? Crear usuario</span>
+      <div class="toggle" onclick="toggleForm('register')">¿No tienes cuenta? Solicitar acceso</div>
     </form>
 
-    <!-- FORMULARIO REGISTRAR USUARIO -->
-    <form id="fRegister" class="hidden">
-      <h2>Registrar Usuario</h2>
-      <div class="input-group">
-        <input id="newUser" placeholder="Nombre de usuario" required>
+    <!-- FORMULARIO DE REGISTRO (CON CLAVE DE AUTORIZACIÓN) -->
+    <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+      <div class="auth-field">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: #d35400;">🔑 Clave de Autorización</label>
+          <input type="password" id="authKey" required placeholder="Clave proporcionada por el Administrador">
+        </div>
       </div>
-      <div class="input-group">
-        <input id="newPass" type="password" placeholder="Contraseña" required>
-        <span class="toggle-pass" onclick="togglePass('newPass')">👁️</span>
+      <div class="form-group">
+        <label>Nuevo Usuario</label>
+        <input type="text" id="regUser" required placeholder="Nombre de usuario">
       </div>
-      <button type="submit">Guardar Usuario</button>
-      <span class="link" onclick="toggleView()">¿Ya tienes cuenta? Iniciar sesión</span>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="regPass" required placeholder="Crea una contraseña">
+      </div>
+      <button type="submit" style="background: #27ae60;">Crear Cuenta Autorizada</button>
+      <div class="toggle" onclick="toggleForm('login')">¿Ya tienes cuenta? Iniciar Sesión</div>
     </form>
   </div>
 
   <script>
-    const fLogin = document.getElementById('fLogin');
-    const fRegister = document.getElementById('fRegister');
+    // CLAVE SECRETA DE AUTORIZACIÓN (Cámbiala por la que desees)
+    const CLAVE_AUTORIZACION = "chanely06112223";
 
-    // Cambiar entre Formulario de Login y Registro
-    function toggleView() {
-      fLogin.classList.toggle('hidden');
-      fRegister.classList.toggle('hidden');
-    }
+    // Cargar usuarios existentes
+    let users = JSON.parse(localStorage.getItem('app_users') || '[]');
 
-    // Mostrar u Ocultar Contraseña
-    function togglePass(inputId) {
-      const input = document.getElementById(inputId);
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
-
-    // REGISTRAR USUARIO NUEVO
-    fRegister.onsubmit = (e) => {
-      e.preventDefault();
-      const u = document.getElementById('newUser').value.trim();
-      const p = document.getElementById('newPass').value;
-
-      let users = JSON.parse(localStorage.getItem('sistemaUsuarios')) || [];
-
-      // Validar si el usuario ya existe
-      if (users.some(item => item.u.toLowerCase() === u.toLowerCase())) {
-        alert("El usuario '" + u + "' ya existe. Intenta con otro nombre.");
+    function toggleForm(view) {
+      if (view === 'register') {
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.getElementById('title').textContent = "Registro Restringido";
+        document.getElementById('subtitle').textContent = "Requiere clave de autorización";
       } else {
-        users.push({ u, p });
-        localStorage.setItem('sistemaUsuarios', JSON.stringify(users));
-        alert("¡Usuario '" + u + "' registrado con éxito! Ahora puedes iniciar sesión.");
-        
-        // Limpiar campos y volver al login
-        document.getElementById('newUser').value = '';
-        document.getElementById('newPass').value = '';
-        toggleView();
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('title').textContent = "Iniciar Sesión";
+        document.getElementById('subtitle').textContent = "Sistema de Control - mi empresaA";
       }
-    };
+    }
 
-    // INICIAR SESIÓN
-    fLogin.onsubmit = (e) => {
+    function handleLogin(e) {
       e.preventDefault();
-      const u = document.getElementById('user').value.trim();
-      const p = document.getElementById('pass').value;
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value.trim();
 
-      let users = JSON.parse(localStorage.getItem('sistemaUsuarios')) || [];
+      const userMatch = users.find(x => x.user.toLowerCase() === u.toLowerCase() && x.pass === p);
 
-      // Usuario maestro por defecto si aún no hay usuarios registrados
-      if (users.length === 0 && u === "admin" && p === "1234") {
-        window.location.href = "index.html";
+      if (userMatch) {
+        localStorage.setItem('session_active', JSON.stringify(userMatch));
+        window.location.href = 'index.html';
+      } else {
+        alert('Usuario o contraseña incorrectos, o no tienes un usuario registrado.');
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const key = document.getElementById('authKey').value.trim();
+      const u = document.getElementById('regUser').value.trim();
+      const p = document.getElementById('regPass').value.trim();
+
+      // Validación de la clave secreta
+      if (key !== CLAVE_AUTORIZACION) {
+        alert('❌ CLAVE DE AUTORIZACIÓN INCORRECTA.\n\nNo estás autorizado para crear usuarios en este sistema.');
         return;
       }
 
-      // Buscar si el usuario y la contraseña coinciden
-      const validUser = users.find(item => item.u.toLowerCase() === u.toLowerCase() && item.p === p);
-
-      if (validUser) {
-        window.location.href = "index.html";
-      } else {
-        alert("Usuario o contraseña incorrectos.");
+      if (users.some(x => x.user.toLowerCase() === u.toLowerCase())) {
+        alert('El nombre de usuario ya existe. Intenta con otro.');
+        return;
       }
-    };
+
+      // Guardar el nuevo usuario autorizado
+      users.push({ user: u, pass: p });
+      localStorage.setItem('app_users', JSON.stringify(users));
+
+      alert('✅ Usuario creado e instalado con éxito. Ya puedes iniciar sesión.');
+      toggleForm('login');
+      document.getElementById('loginUser').value = u;
+      document.getElementById('regPass').value = '';
+      document.getElementById('authKey').value = '';
+    }
   </script>
 </body>
 </html>
