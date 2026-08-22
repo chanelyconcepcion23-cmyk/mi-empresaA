@@ -1,11 +1,9 @@
-Aquí tienes el archivo **login.html** adaptado para mantener la coherencia visual con la app, con el sistema de autenticación por contraseña y la clave de seguridad para el registro de nuevos usuarios:
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acceso - Inversiones Cruz</title>
+  <title>Acceso - mi empresaA</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
@@ -32,20 +30,16 @@ Aquí tienes el archivo **login.html** adaptado para mantener la coherencia visu
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       text-align: center;
     }
-    .logo-circle {
-      background-color: #0d5c3a;
-      border: 2px solid #ffffff;
-      width: 70px; 
+    .header-logo {
+      width: 70px;
       height: 70px;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px;
       border-radius: 50%;
-      display: flex; 
-      justify-content: center; 
-      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       margin: 0 auto 15px auto;
-      color: #ffffff; 
-      font-size: 32px; 
-      font-weight: bold;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: block;
     }
     h2 { margin: 0; color: #0d5c3a; font-size: 22px; }
     p.sub { color: #666; font-size: 13px; margin: 5px 0 20px 0; }
@@ -127,8 +121,8 @@ Aquí tienes el archivo **login.html** adaptado para mantener la coherencia visu
   <div class="card">
     <button id="btnDownload" class="btn-download" onclick="instalarApp()">📥 Descargar / Instalar App</button>
 
-    <div class="logo-circle">IC</div>
-    <h2>INVERSIONES CRUZ</h2>
+    <img src="logo.svg" alt="Logo" class="header-logo">
+    <h2>mi empresaA</h2>
     <p class="sub">Acceso Restringido al Sistema</p>
 
     <div class="tab-group">
