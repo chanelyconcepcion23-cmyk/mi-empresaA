@@ -29,6 +29,7 @@
       max-width: 380px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       text-align: center;
+      position: relative;
     }
     .logo-circle {
       background-color: #1b4332;
@@ -71,11 +72,31 @@
       margin-top: 10px;
     }
     .btn-submit:hover { background-color: #1b4332; }
+
+    /* Botón flotante para instalar la App */
+    .btn-download {
+      display: none;
+      width: 100%;
+      padding: 10px;
+      background-color: #25d366;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .btn-download:hover { background-color: #1eb857; }
   </style>
 </head>
 <body>
 
   <div class="card">
+    <!-- Botón de descarga/instalación de la App -->
+    <button id="btnDownload" class="btn-download" onclick="instalarApp()">📥 Descargar / Instalar App</button>
+
     <div class="logo-circle">P</div>
     <h2>Inversiones Cruz</h2>
     <p class="sub">Acceso Restringido al Sistema</p>
@@ -101,18 +122,46 @@
   </div>
 
   <script>
+    // CAMBIA AQUÍ TU CLAVE DE AUTORIZACIÓN
+    const CLAVE_CORRECTA = "chanely06112223"; 
+
     function validarAcceso(e) {
       e.preventDefault();
       const clave = document.getElementById('authKey').value;
 
-      // Clave requerida para autorizar el ingreso
-      if (clave !== "123456") {
+      if (clave !== CLAVE_CORRECTA) {
         alert("❌ Clave de autorización incorrecta.");
+        document.getElementById('authKey').value = "";
         return;
       }
 
       sessionStorage.setItem("usuarioAutenticado", "true");
       window.location.href = "index.html";
+    }
+
+    // Lógica para permitir descargar/instalar la PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('btnDownload').style.display = 'block';
+    });
+
+    function instalarApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choice) => {
+          if (choice.outcome === 'accepted') {
+            document.getElementById('btnDownload').style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    // Registrar Service Worker para soporte PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
     }
   </script>
 
