@@ -5,10 +5,11 @@
     {
       "src": "logo.svg",
       "type": "image/svg+xml",
-      "sizes": "192x192 512x512"
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "background_color": "#0d5c3a",
   "theme_color": "#0d5c3a",
   "display": "standalone"
