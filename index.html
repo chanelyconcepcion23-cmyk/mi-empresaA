@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>mi empresaA</title>
+  <title>Inversiones Cruz</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="apple-touch-icon" href="logo.svg">
   <meta name="theme-color" content="#0d5c3a">
-  <meta name="apple-mobile-web-app-title" content="mi empresaA">
+  <meta name="apple-mobile-web-app-title" content="Inversiones Cruz">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
     body{font-family:Arial,sans-serif;margin:0;background:#f4f6f8;color:#222}
@@ -38,6 +38,10 @@
       #modal{position:static;background:#fff;padding:0;display:block!important}
       #modal > div{padding:0;border-radius:0;box-shadow:none;max-width:100%}
       .no-print{display:none!important}
+      .ticket-company{font-size:24px!important;font-weight:900!important;text-align:center;margin:4px 0;}
+      .ticket-client{font-size:20px!important;font-weight:900!important;margin:8px 0;}
+      .ticket-text{font-size:14px!important;font-weight:bold!important;color:#000!important;}
+      .ticket-item{display:flex;justify-content:space-between;font-size:14px!important;font-weight:bold;}
     }
   </style>
 </head>
@@ -45,7 +49,7 @@
   <header>
     <img id="appLogo" class="header-logo" src="logo.svg" alt="Logo">
     <div>
-      <h1 id="brand" style="margin:0;font-size:24px;">mi empresaA</h1>
+      <h1 id="brand" style="margin:0;font-size:24px;">INVERSIONES CRUZ</h1>
       <p id="tag" style="margin:4px 0 0 0;font-size:13px;opacity:0.9;">Control de préstamos, clientes y rutas</p>
     </div>
   </header>
@@ -195,7 +199,7 @@
       <h2>Registrar cobro</h2>
       <div class="grid">
         <select id="pl"></select>
-        <input id="pm" type="number" placeholder="Monto a cobrar">
+        <input id="pm" type="number" placeholder="Monto Recibido ($)">
         <input id="pMora" type="number" placeholder="Mora (Opcional)" value="0">
         <input id="pn" placeholder="Nota opcional">
       </div>
@@ -231,7 +235,7 @@
       <div id="receiptContent"></div>
       
       <div class="no-print" style="margin-top:15px; display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
-        <button onclick="window.print()" style="background:#0d5c3a; flex:1; font-size:14px;">🖨️ Imprimir</button>
+        <button onclick="window.print()" style="background:#0d5c3a; flex:1; font-size:14px;">🖨️ Imprimir Recibo</button>
         <button onclick="enviarWhatsApp()" style="background:#25D366; color:#fff; flex:1; font-size:14px;">💬 WhatsApp</button>
         <button class="secondary" onclick="cerrarModal()" style="width:100%; margin-top:5px;">Cerrar</button>
       </div>
@@ -243,12 +247,12 @@
       window.location.href = "login.html";
     }
 
-    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"INVERSIONES CRUZ","phone":"","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
+    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"INVERSIONES CRUZ","phone":"(829) 462-0598 / (849) 286-3988","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
     if (!D.company.name) D.company.name = "INVERSIONES CRUZ";
     if (!D.workers) D.workers = [];
 
     const $ = id => document.getElementById(id),
-          money = x => 'RD$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
+          money = x => '$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
           save = () => localStorage.setItem('loanapp', JSON.stringify(D)),
           today = () => new Date().toISOString().slice(0, 10),
           client = id => D.clients.find(x => x.id == id);
@@ -408,29 +412,43 @@
 
     function payLoan() {
       let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0;
-      if (!l || m <= 0) return alert('Selecciona préstamo y monto');
+      if (!l || m <= 0) return alert('Selecciona préstamo y monto válido');
 
-      // Cálculo de cuotas pagadas
-      let cuotasCobradas = Math.max(1, Math.round(m / l.quota));
-      let cuotasDetalle = [];
-      
-      for (let i = 1; i <= cuotasCobradas; i++) {
-        cuotasDetalle.push(l.paidQuotas + i);
+      let montoRestante = m;
+      let cuotaActual = l.paidQuotas + 1;
+      let desgloseItems = [];
+      let totalCobrado = 0;
+
+      while (montoRestante > 0 && (l.totalQuotas === 0 || cuotaActual <= l.totalQuotas)) {
+        let pagoEstaCuota = (montoRestante >= l.quota) ? l.quota : montoRestante;
+        montoRestante -= pagoEstaCuota;
+        totalCobrado += pagoEstaCuota;
+
+        desgloseItems.push({
+          cuota: l.totalQuotas > 0 ? `${cuotaActual}/${l.totalQuotas}` : `${cuotaActual}`,
+          monto: pagoEstaCuota
+        });
+
+        l.paidQuotas++;
+        cuotaActual++;
       }
 
-      l.paidQuotas += cuotasCobradas;
       l.balance = Math.max(0, l.balance - m);
       if (l.balance <= 0) l.active = false;
 
+      const ahora = new Date();
       let p = {
         id: Date.now(),
-        ticket: Math.floor(1000000000000000 + Math.random() * 9000000000000000),
-        loanId: l.id, amount: m, mora, total: m + mora,
-        date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-        routeId: D.route?.id || null, note: pn.value, firma: tieneFirma ? canvas.toDataURL() : null,
-        numCuota: `${l.paidQuotas}/${l.totalQuotas}`,
-        cuotasLista: cuotasDetalle,
-        montoPorCuota: l.quota
+        loanId: l.id, 
+        amount: m, 
+        mora, 
+        total: m + mora,
+        fechaHora: `${ahora.toLocaleDateString('es-DO', {month:'long'})}-${ahora.getFullYear()} - ${ahora.toLocaleTimeString('es-DO', {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true})}`,
+        fechaCorta: `Fecha: ${ahora.toLocaleDateString('es-DO', {year: 'numeric', month: 'short', day: '2-digit'})}`,
+        routeId: D.route?.id || null, 
+        note: pn.value, 
+        firma: tieneFirma ? canvas.toDataURL() : null,
+        desglose: desgloseItems
       };
 
       D.payments.push(p);
@@ -438,76 +456,50 @@
       limpiarFirma(); render();
 
       let c = client(l.clientId);
-      let cobradorActual = D.workers.find(w => w.name === D.route?.collector) || {};
 
-      // Generar desglose de cuotas
-      let desgloseHTML = "";
-      if (p.cuotasLista.length > 1) {
-        desgloseHTML = `<div style="margin: 6px 0; color: #222222; font-size: 14px;"><b>Cuotas Pagadas Juntas:</b><br>`;
-        p.cuotasLista.forEach(num => {
-          desgloseHTML += `• Cuota #${num}: <b>${money(p.montoPorCuota)}</b><br>`;
-        });
-        desgloseHTML += `</div>`;
-      } else {
-        desgloseHTML = `<div style="color: #222222; font-size: 15px; margin: 4px 0;">Cuota Pagada ...<b>#${p.cuotasLista[0]}</b>: <b>${money(p.amount)}</b></div>`;
-      }
+      let desgloseHTML = p.desglose.map(item => `
+        <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; margin: 2px 0;">
+          <span>Cuota Pagada ...${item.cuota}:</span>
+          <span>${money(item.monto)}</span>
+        </div>
+      `).join('');
 
       $('receiptContent').innerHTML = `
-        <div style="width: 100%; font-family: 'Courier New', monospace; font-size: 14px; text-align: left; color: #111111; line-height: 1.4;">
+        <div style="width: 100%; font-family: monospace; font-size: 14px; text-align: left; color: #000000; line-height: 1.3;">
+          <p style="text-align:center; font-size:12px; margin:0;">Testing PDF417: (Experimental)</p>
+          <br>
+          <p style="text-align:center; font-size:16px; font-weight:bold; margin:0;">RECIBO DE PAGO!</p>
+          <p style="text-align:center; font-size:14px; font-weight:bold; margin:2px 0;">${p.fechaHora}</p>
+          <p style="margin: 4px 0;">--------------------------------</p>
           
-          <div style="text-align: center; margin-top: 5px;">
-            <div style="font-size: 20px; font-weight: 900; color: #000000;">RECIBO DE PAGO!</div>
-            <div style="font-size: 13px; color: #333333;">${p.date}</div>
-          </div>
+          <h2 style="font-size: 24px; font-weight: 900; text-align: center; margin: 5px 0;">${D.company.name || 'INVERSIONES CRUZ'}</h2>
+          <p style="font-size: 15px; font-weight: bold; margin: 2px 0;">Zona: ${c?.route || D.route?.name || 'Bandera'}</p>
+          <p style="font-size: 15px; font-weight: bold; margin: 2px 0;">Cobrado por: ${D.route?.collector || 'Emmanuel'}</p>
+          <p style="font-size: 15px; font-weight: bold; margin: 2px 0;">${D.company.phone || '(829) 462-0598 / (849) 286-3988'}</p>
+          <p style="margin: 4px 0;">--------------------------------</p>
+          
+          <p style="font-size: 15px; font-weight: bold; margin: 2px 0;">${p.fechaCorta}</p>
+          <br>
+          <h3 style="font-size: 20px; font-weight: 900; margin: 5px 0; text-transform: uppercase;">${c?.name || ''}</h3>
+          <p style="margin: 4px 0;">--------------------------------</p>
 
-          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+          <div>${desgloseHTML}</div>
+          
+          ${mora > 0 ? `<div style="display:flex; justify-content:space-between; font-size:15px; font-weight:bold;"><span>Mora:</span><span>${money(mora)}</span></div>` : ''}
 
-          <!-- EMPRESA EN GRANDE -->
-          <div style="text-align: center; color: #222222;">
-            <strong style="font-size: 26px; text-transform: uppercase; display: block; font-weight: 900; color: #000000; letter-spacing: 1px; margin-bottom: 4px;">${D.company.name || 'INVERSIONES CRUZ'}</strong>
-            Zona: <b>${c?.route || D.route?.name || 'G. Mella'}</b><br>
-            Cobrado por: <b>${D.route?.collector || 'Emmanuel'}</b><br>
-            Tel: <b>${cobradorActual.tel || D.company.phone || '(829) 462-0598 / (849) 286-3988'}</b>
-          </div>
-
-          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-
-          <!-- CLIENTE DESTACADO Y BIEN GRANDE -->
-          <div style="font-size: 14px; color: #222222;">
-            <div style="margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 4px;">
-              <span style="font-size: 12px; font-weight: bold; color: #444; display: block;">CLIENTE:</span>
-              <span style="font-size: 24px; font-weight: 900; text-transform: uppercase; color: #000000; display: block; line-height: 1.1;">${c?.name || ''}</span>
-            </div>
-            <div><b>Ticket . :</b> ${p.ticket}</div>
-            <div><b>Préstamo No. :</b> P${l.id}</div>
-            <div><b>Monto Prestado:</b> ${money(l.amount)}</div>
-            <div><b>Inicio:</b> ${l.date || 'N/A'} | <b>Fin:</b> ${l.endDate || 'N/A'}</div>
-          </div>
-
-          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-
-          ${desgloseHTML}
-          ${mora > 0 ? `<div style="color: #222222;">Mora: <b>${money(mora)}</b></div>` : ''}
-
-          <div style="display: flex; justify-content: space-between; font-weight: 900; margin-top: 6px; font-size: 16px; color: #000000; border-top: 1px solid #000; padding-top: 4px;">
-            <span>TOTAL MONTO PAGADO:</span>
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; margin-top: 6px;">
+            <span>Total Monto Pagado:</span>
             <span>${money(p.total)}</span>
           </div>
 
-          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+          <p style="margin: 4px 0;">--------------------------------</p>
+          <p style="font-size: 20px; font-weight: 900; margin: 5px 0;">Balance: ${money(l.balance)}</p>
+          <br>
+          <p style="text-align:center; font-size: 13px; font-weight: bold; margin:2px 0;">SIN RECIBO, NO HAY RECLAMOS!</p>
+          <br>
+          <p style="text-align:center; font-size: 12px; font-weight: bold; margin:0;">En caso de incumplimiento, sus datos crediticios seran procesados a data</p>
 
-          <div style="font-size: 18px; font-weight: 900; color: #000000; margin: 6px 0;">
-            BALANCE RESTANTE: ${money(l.balance)}
-          </div>
-
-          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
-
-          <div style="text-align: center; font-size: 13px; margin-top: 8px; color: #111111;">
-            <b style="font-size: 14px; color: #000000;">⚠️ SIN RECIBO, NO HAY RECLAMOS!</b><br>
-            <span>Conserve este comprobante de pago como soporte legal.</span>
-          </div>
-
-          ${p.firma ? `<div style="margin-top:12px; text-align:center;"><img src="${p.firma}" style="width:120px; height:50px; border-bottom:1px solid #000;"><br><span style="font-size:11px; font-weight: bold; color: #000;">Firma del Cliente</span></div>` : ''}
+          ${p.firma ? `<div style="margin-top:12px; text-align:center;"><img src="${p.firma}" style="width:120px; height:50px; border-bottom:1px solid #000;"><br><span style="font-size:11px; font-weight: bold;">Firma del Cliente</span></div>` : ''}
         </div>
       `;
       $('modal').classList.remove('hidden');
@@ -522,23 +514,25 @@
 
       let telefono = c.tel.replace(/\D/g, ''); 
       
-      let cuotasTexto = p.cuotasLista.length > 1 
-        ? `*Cuotas Pagadas (${p.cuotasLista.length} Juntas):* #${p.cuotasLista.join(', #')}` 
-        : `*Cuota Pagada:* #${p.cuotasLista[0]}`;
+      let desgloseTexto = p.desglose.map(item => `Cuota Pagada ...${item.cuota}: ${money(item.monto)}`).join('%0A');
 
-      let mensaje = `*${D.company.name || 'INVERSIONES CRUZ'}*%0A` +
-        `*RECIBO DE PAGO!*%0A` +
-        `Fecha: ${p.date}%0A` +
+      let mensaje = `*RECIBO DE PAGO!*%0A` +
+        `${p.fechaHora}%0A` +
         `--------------------------------%0A` +
-        `*CLIENTE:* ${c.name}%0A` +
-        `*Ticket . :* ${p.ticket}%0A` +
-        `*Préstamo No.:* P${l.id}%0A` +
-        `*Monto Prestado:* ${money(l.amount)}%0A` +
-        `${cuotasTexto}%0A` +
-        `*TOTAL MONTO PAGADO:* ${money(p.total)}%0A` +
-        `*BALANCE RESTANTE:* ${money(l.balance)}%0A` +
+        `*${D.company.name || 'INVERSIONES CRUZ'}*%0A` +
+        `Zona: ${c?.route || D.route?.name || 'Bandera'}%0A` +
+        `Cobrado por: ${D.route?.collector || 'Emmanuel'}%0A` +
+        `${D.company.phone || '(829) 462-0598 / (849) 286-3988'}%0A` +
         `--------------------------------%0A` +
-        `_⚠️ SIN RECIBO, NO HAY RECLAMOS!_`;
+        `${p.fechaCorta}%0A%0A` +
+        `*${c.name}*%0A` +
+        `--------------------------------%0A` +
+        `${desgloseTexto}%0A` +
+        `--------------------------------%0A` +
+        `*Total Monto Pagado:* ${money(p.total)}%0A` +
+        `--------------------------------%0A` +
+        `*Balance:* ${money(l.balance)}%0A%0A` +
+        `_SIN RECIBO, NO HAY RECLAMOS!_`;
 
       window.open(`https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`, '_blank');
     }

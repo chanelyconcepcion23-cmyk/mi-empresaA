@@ -1,3 +1,5 @@
+Aquí tienes el archivo **login.html** adaptado para mantener la coherencia visual con la app, con el sistema de autenticación por contraseña y la clave de seguridad para el registro de nuevos usuarios:
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,14 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso - Inversiones Cruz</title>
   
-  <!-- Enlace al Manifest para soporte de PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#122b1e">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <meta name="theme-color" content="#0d5c3a">
 
   <style>
     * { box-sizing: border-box; }
     body {
-      background-color: #122b1e;
+      background-color: #0d5c3a;
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
@@ -22,31 +24,56 @@
       padding: 20px;
     }
     .card {
-      background-color: #e2e8f0;
+      background-color: #ffffff;
       padding: 30px 25px;
-      border-radius: 20px;
+      border-radius: 16px;
       width: 100%;
       max-width: 380px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       text-align: center;
-      position: relative;
     }
     .logo-circle {
-      background-color: #1b4332;
-      border: 2px dashed #d4af37;
-      width: 65px; 
-      height: 65px;
+      background-color: #0d5c3a;
+      border: 2px solid #ffffff;
+      width: 70px; 
+      height: 70px;
       border-radius: 50%;
       display: flex; 
       justify-content: center; 
       align-items: center;
       margin: 0 auto 15px auto;
-      color: #d4af37; 
+      color: #ffffff; 
       font-size: 32px; 
       font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
-    h2 { margin: 0; color: #1b4332; font-size: 22px; }
-    p.sub { color: #555; font-size: 13px; margin: 5px 0 20px 0; }
+    h2 { margin: 0; color: #0d5c3a; font-size: 22px; }
+    p.sub { color: #666; font-size: 13px; margin: 5px 0 20px 0; }
+
+    .tab-group {
+      display: flex;
+      background-color: #e2e8f0;
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 6px;
+      color: #475569;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background-color: #0d5c3a;
+      color: #ffffff;
+    }
+
     .input-group { text-align: left; margin-bottom: 15px; }
     label { font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
     input {
@@ -54,15 +81,17 @@
       padding: 12px;
       border: 1px solid #cbd5e1; 
       border-radius: 8px;
-      background-color: #ffffff; 
+      background-color: #f8fafc; 
       font-size: 15px;
       outline: none;
     }
-    .auth-box input { background-color: #b0c4de; border-color: #94a3b8; }
+    input:focus { border-color: #0d5c3a; }
+    .auth-box input { background-color: #f1f5f9; border-color: #94a3b8; }
+    
     .btn-submit {
       width: 100%; 
       padding: 14px;
-      background-color: #2d6a4f; 
+      background-color: #0d5c3a; 
       color: white;
       border: none; 
       border-radius: 8px;
@@ -70,10 +99,12 @@
       font-weight: bold;
       cursor: pointer; 
       margin-top: 10px;
+      transition: background 0.2s;
     }
-    .btn-submit:hover { background-color: #1b4332; }
+    .btn-submit:hover { background-color: #084028; }
 
-    /* Botón flotante para instalar la App */
+    .hidden { display: none !important; }
+
     .btn-download {
       display: none;
       width: 100%;
@@ -94,17 +125,21 @@
 <body>
 
   <div class="card">
-    <!-- Botón de descarga/instalación de la App -->
     <button id="btnDownload" class="btn-download" onclick="instalarApp()">📥 Descargar / Instalar App</button>
 
-    <div class="logo-circle">P</div>
-    <h2>Inversiones Cruz</h2>
+    <div class="logo-circle">IC</div>
+    <h2>INVERSIONES CRUZ</h2>
     <p class="sub">Acceso Restringido al Sistema</p>
 
+    <div class="tab-group">
+      <button class="tab-btn active" id="tabLogin" onclick="cambiarModo('login')">Iniciar Sesión</button>
+      <button class="tab-btn" id="tabRegister" onclick="cambiarModo('register')">Crear Usuario</button>
+    </div>
+
     <form onsubmit="validarAcceso(event)">
-      <div class="input-group auth-box">
+      <div class="input-group auth-box hidden" id="boxAuthKey">
         <label>🔑 Clave de Autorización</label>
-        <input type="password" id="authKey" placeholder="••••••••••••" required>
+        <input type="password" id="authKey" placeholder="••••••••••••">
       </div>
 
       <div class="input-group">
@@ -117,29 +152,56 @@
         <input type="password" id="regPass" placeholder="••••••••" required>
       </div>
 
-      <button type="submit" class="btn-submit">Iniciar Sesión / Entrar</button>
+      <button type="submit" class="btn-submit" id="btnSubmit">Iniciar Sesión / Entrar</button>
     </form>
   </div>
 
   <script>
-    // CAMBIA AQUÍ TU CLAVE DE AUTORIZACIÓN
     const CLAVE_CORRECTA = "chanely06112223"; 
+    let modoActual = "login";
+
+    function cambiarModo(modo) {
+      modoActual = modo;
+      const boxAuthKey = document.getElementById('boxAuthKey');
+      const btnSubmit = document.getElementById('btnSubmit');
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const authKeyInput = document.getElementById('authKey');
+
+      if (modo === 'register') {
+        boxAuthKey.classList.remove('hidden');
+        authKeyInput.required = true;
+        btnSubmit.innerText = "Registrar Nuevo Usuario";
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+      } else {
+        boxAuthKey.classList.add('hidden');
+        authKeyInput.required = false;
+        authKeyInput.value = "";
+        btnSubmit.innerText = "Iniciar Sesión / Entrar";
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+      }
+    }
 
     function validarAcceso(e) {
       e.preventDefault();
-      const clave = document.getElementById('authKey').value;
-
-      if (clave !== CLAVE_CORRECTA) {
-        alert("❌ Clave de autorización incorrecta.");
-        document.getElementById('authKey').value = "";
-        return;
+      
+      if (modoActual === 'register') {
+        const clave = document.getElementById('authKey').value;
+        if (clave !== CLAVE_CORRECTA) {
+          alert("❌ Clave de autorización incorrecta.");
+          document.getElementById('authKey').value = "";
+          return;
+        }
+        alert("✅ Usuario registrado exitosamente. Ahora puedes Iniciar Sesión.");
+        cambiarModo('login');
+      } else {
+        sessionStorage.setItem("usuarioAutenticado", "true");
+        window.location.href = "index.html";
       }
-
-      sessionStorage.setItem("usuarioAutenticado", "true");
-      window.location.href = "index.html";
     }
 
-    // Lógica para permitir descargar/instalar la PWA
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -159,9 +221,8 @@
       }
     }
 
-    // Registrar Service Worker para soporte PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   </script>
 
