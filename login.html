@@ -1,190 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Acceso - mi empresaA</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <meta name="theme-color" content="#0d5c3a">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro Restringido</title>
   <style>
-    * { box-sizing: border-box; }
     body {
+      background-color: #122b1e;
       font-family: Arial, sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #0d5c3a 0%, #073823 100%);
-      min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 20px;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
     }
     .card {
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 16px;
+      background-color: #e2e8f0;
+      padding: 30px 25px;
+      border-radius: 20px;
       width: 100%;
       max-width: 380px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       text-align: center;
+      box-sizing: border-box;
     }
-    .logo {
-      width: 75px;
-      height: 75px;
-      margin-bottom: 10px;
-      background: #fff;
-      padding: 5px;
+    .logo-circle {
+      background-color: #1b4332;
+      border: 2px dashed #d4af37;
+      width: 65px; height: 65px;
       border-radius: 50%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: flex; justify-content: center; align-items: center;
+      margin: 0 auto 15px auto;
+      color: #d4af37; font-size: 32px; font-weight: bold;
     }
-    h2 { margin: 0 0 5px 0; color: #0d5c3a; }
-    p { margin: 0 0 20px 0; color: #666; font-size: 13px; }
-    .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333; }
+    h2 { margin: 0; color: #1b4332; font-size: 22px; }
+    p.sub { color: #555; font-size: 13px; margin: 5px 0 20px 0; }
+    .input-group { text-align: left; margin-bottom: 15px; }
+    label { font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
     input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
+      width: 100%; padding: 12px;
+      border: 1px solid #cbd5e1; border-radius: 8px;
+      background-color: #cbd5e1; font-size: 15px;
+      box-sizing: border-box; outline: none;
     }
-    input:focus { border-color: #0d5c3a; }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #0d5c3a;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
+    .auth-box input { background-color: #b0c4de; border-color: #94a3b8; }
+    .btn-submit {
+      width: 100%; padding: 14px;
+      background-color: #2d6a4f; color: white;
+      border: none; border-radius: 8px;
+      font-size: 16px; font-weight: bold;
+      cursor: pointer; margin-top: 10px;
     }
-    button:hover { background: #09442a; }
-    .toggle {
-      margin-top: 15px;
-      font-size: 13px;
-      color: #0d5c3a;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .hidden { display: none; }
-    .auth-field {
-      background: #fdf2e9;
-      border: 1px dashed #e67e22;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
+    .btn-submit:hover { background-color: #1b4332; }
+    .link { display: block; margin-top: 15px; font-size: 13px; color: #2d6a4f; text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <img src="logo.svg" class="logo" alt="Logo">
-    <h2 id="title">Iniciar Sesión</h2>
-    <p id="subtitle">Sistema de Control - mi empresaA</p>
+    <div class="logo-circle">P</div>
+    <h2>Registro Restringido</h2>
+    <p class="sub">Requiere clave de autorización</p>
 
-    <!-- FORMULARIO DE LOGIN -->
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Usuario</label>
-        <input type="text" id="loginUser" required placeholder="Ingresa tu usuario">
+    <form onsubmit="registrar(event)">
+      <div class="input-group auth-box">
+        <label>🔑 Clave de Autorización</label>
+        <input type="password" id="authKey" placeholder="••••••••••••" required>
       </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="loginPass" required placeholder="Ingresa tu contraseña">
-      </div>
-      <button type="submit">Entrar</button>
-      <div class="toggle" onclick="toggleForm('register')">¿No tienes cuenta? Solicitar acceso</div>
-    </form>
 
-    <!-- FORMULARIO DE REGISTRO (CON CLAVE DE AUTORIZACIÓN) -->
-    <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
-      <div class="auth-field">
-        <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: #d35400;">🔑 Clave de Autorización</label>
-          <input type="password" id="authKey" required placeholder="Clave proporcionada por el Administrador">
-        </div>
-      </div>
-      <div class="form-group">
+      <div class="input-group">
         <label>Nuevo Usuario</label>
-        <input type="text" id="regUser" required placeholder="Nombre de usuario">
+        <input type="text" id="regUser" placeholder="ej: emma21" required>
       </div>
-      <div class="form-group">
+
+      <div class="input-group">
         <label>Contraseña</label>
-        <input type="password" id="regPass" required placeholder="Crea una contraseña">
+        <input type="password" id="regPass" placeholder="••••••••" required>
       </div>
-      <button type="submit" style="background: #27ae60;">Crear Cuenta Autorizada</button>
-      <div class="toggle" onclick="toggleForm('login')">¿Ya tienes cuenta? Iniciar Sesión</div>
+
+      <button type="submit" class="btn-submit">Crear Cuenta Autorizada</button>
     </form>
+
+    <a href="#" class="link" onclick="alert('Redirigiendo a inicio de sesión')">¿Ya tienes cuenta? Iniciar Sesión</a>
   </div>
 
   <script>
-    // CLAVE SECRETA DE AUTORIZACIÓN (Cámbiala por la que desees)
-    const CLAVE_AUTORIZACION = "chanely06112223";
-
-    // Cargar usuarios existentes
-    let users = JSON.parse(localStorage.getItem('app_users') || '[]');
-
-    function toggleForm(view) {
-      if (view === 'register') {
-        document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('registerForm').classList.remove('hidden');
-        document.getElementById('title').textContent = "Registro Restringido";
-        document.getElementById('subtitle').textContent = "Requiere clave de autorización";
-      } else {
-        document.getElementById('registerForm').classList.add('hidden');
-        document.getElementById('loginForm').classList.remove('hidden');
-        document.getElementById('title').textContent = "Iniciar Sesión";
-        document.getElementById('subtitle').textContent = "Sistema de Control - mi empresaA";
-      }
-    }
-
-    function handleLogin(e) {
+    function registrar(e) {
       e.preventDefault();
-      const u = document.getElementById('loginUser').value.trim();
-      const p = document.getElementById('loginPass').value.trim();
+      const clave = document.getElementById('authKey').value;
+      const usr = document.getElementById('regUser').value;
 
-      const userMatch = users.find(x => x.user.toLowerCase() === u.toLowerCase() && x.pass === p);
-
-      if (userMatch) {
-        localStorage.setItem('session_active', JSON.stringify(userMatch));
-        window.location.href = 'index.html';
-      } else {
-        alert('Usuario o contraseña incorrectos, o no tienes un usuario registrado.');
-      }
-    }
-
-    function handleRegister(e) {
-      e.preventDefault();
-      const key = document.getElementById('authKey').value.trim();
-      const u = document.getElementById('regUser').value.trim();
-      const p = document.getElementById('regPass').value.trim();
-
-      // Validación de la clave secreta
-      if (key !== CLAVE_AUTORIZACION) {
-        alert('❌ CLAVE DE AUTORIZACIÓN INCORRECTA.\n\nNo estás autorizado para crear usuarios en este sistema.');
+      if (clave !== "123456") {
+        alert("❌ Clave de autorización incorrecta.");
         return;
       }
 
-      if (users.some(x => x.user.toLowerCase() === u.toLowerCase())) {
-        alert('El nombre de usuario ya existe. Intenta con otro.');
-        return;
-      }
-
-      // Guardar el nuevo usuario autorizado
-      users.push({ user: u, pass: p });
-      localStorage.setItem('app_users', JSON.stringify(users));
-
-      alert('✅ Usuario creado e instalado con éxito. Ya puedes iniciar sesión.');
-      toggleForm('login');
-      document.getElementById('loginUser').value = u;
-      document.getElementById('regPass').value = '';
-      document.getElementById('authKey').value = '';
+      alert("✅ Usuario " + usr + " creado exitosamente.");
+      window.location.href = "index.html";
     }
   </script>
+
 </body>
 </html>
