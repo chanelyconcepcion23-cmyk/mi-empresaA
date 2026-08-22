@@ -196,11 +196,16 @@
       }
     }
 
+    /* LÓGICA DE INSTALACIÓN PWA */
     let deferredPrompt;
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      document.getElementById('btnDownload').style.display = 'block';
+      const btnDownload = document.getElementById('btnDownload');
+      if (btnDownload) {
+        btnDownload.style.display = 'block';
+      }
     });
 
     function instalarApp() {
@@ -208,7 +213,10 @@
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choice) => {
           if (choice.outcome === 'accepted') {
-            document.getElementById('btnDownload').style.display = 'none';
+            const btnDownload = document.getElementById('btnDownload');
+            if (btnDownload) {
+              btnDownload.style.display = 'none';
+            }
           }
           deferredPrompt = null;
         });
@@ -221,36 +229,4 @@
   </script>
 
 </body>
-</html>let deferredPrompt;
-const btnInstalar = document.getElementById('btnInstalar');
-
-// Captura el evento de instalación cuando el navegador cumple los requisitos
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Muestra el botón de instalar en tu página
-  if (btnInstalar) {
-    btnInstalar.style.display = 'block';
-  }
-});
-
-// Evento al hacer clic en el botón
-if (btnInstalar) {
-  btnInstalar.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('El usuario instaló la aplicación');
-      }
-      deferredPrompt = null;
-      btnInstalar.style.display = 'none';
-    }
-  });
-}
-
-// Oculta el botón si ya está instalada
-window.addEventListener('appinstalled', () => {
-  if (btnInstalar) btnInstalar.style.display = 'none';
-  console.log('PWA instalada exitosamente');
-});
+</html>
