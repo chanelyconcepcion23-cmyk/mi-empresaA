@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro Restringido</title>
+  <title>Acceso - Inversiones Cruz</title>
+  
+  <!-- Enlace al Manifest para soporte de PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#122b1e">
+
   <style>
+    * { box-sizing: border-box; }
     body {
       background-color: #122b1e;
       font-family: Arial, sans-serif;
@@ -13,6 +19,7 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
+      padding: 20px;
     }
     .card {
       background-color: #e2e8f0;
@@ -22,55 +29,66 @@
       max-width: 380px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       text-align: center;
-      box-sizing: border-box;
     }
     .logo-circle {
       background-color: #1b4332;
       border: 2px dashed #d4af37;
-      width: 65px; height: 65px;
+      width: 65px; 
+      height: 65px;
       border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
       margin: 0 auto 15px auto;
-      color: #d4af37; font-size: 32px; font-weight: bold;
+      color: #d4af37; 
+      font-size: 32px; 
+      font-weight: bold;
     }
     h2 { margin: 0; color: #1b4332; font-size: 22px; }
     p.sub { color: #555; font-size: 13px; margin: 5px 0 20px 0; }
     .input-group { text-align: left; margin-bottom: 15px; }
     label { font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
     input {
-      width: 100%; padding: 12px;
-      border: 1px solid #cbd5e1; border-radius: 8px;
-      background-color: #cbd5e1; font-size: 15px;
-      box-sizing: border-box; outline: none;
+      width: 100%; 
+      padding: 12px;
+      border: 1px solid #cbd5e1; 
+      border-radius: 8px;
+      background-color: #ffffff; 
+      font-size: 15px;
+      outline: none;
     }
     .auth-box input { background-color: #b0c4de; border-color: #94a3b8; }
     .btn-submit {
-      width: 100%; padding: 14px;
-      background-color: #2d6a4f; color: white;
-      border: none; border-radius: 8px;
-      font-size: 16px; font-weight: bold;
-      cursor: pointer; margin-top: 10px;
+      width: 100%; 
+      padding: 14px;
+      background-color: #2d6a4f; 
+      color: white;
+      border: none; 
+      border-radius: 8px;
+      font-size: 16px; 
+      font-weight: bold;
+      cursor: pointer; 
+      margin-top: 10px;
     }
     .btn-submit:hover { background-color: #1b4332; }
-    .link { display: block; margin-top: 15px; font-size: 13px; color: #2d6a4f; text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="card">
     <div class="logo-circle">P</div>
-    <h2>Registro Restringido</h2>
-    <p class="sub">Requiere clave de autorización</p>
+    <h2>Inversiones Cruz</h2>
+    <p class="sub">Acceso Restringido al Sistema</p>
 
-    <form onsubmit="registrar(event)">
+    <form onsubmit="validarAcceso(event)">
       <div class="input-group auth-box">
         <label>🔑 Clave de Autorización</label>
         <input type="password" id="authKey" placeholder="••••••••••••" required>
       </div>
 
       <div class="input-group">
-        <label>Nuevo Usuario</label>
-        <input type="text" id="regUser" placeholder="ej: emma21" required>
+        <label>Usuario</label>
+        <input type="text" id="regUser" placeholder="Usuario" required>
       </div>
 
       <div class="input-group">
@@ -78,24 +96,22 @@
         <input type="password" id="regPass" placeholder="••••••••" required>
       </div>
 
-      <button type="submit" class="btn-submit">Crear Cuenta Autorizada</button>
+      <button type="submit" class="btn-submit">Iniciar Sesión / Entrar</button>
     </form>
-
-    <a href="#" class="link" onclick="alert('Redirigiendo a inicio de sesión')">¿Ya tienes cuenta? Iniciar Sesión</a>
   </div>
 
   <script>
-    function registrar(e) {
+    function validarAcceso(e) {
       e.preventDefault();
       const clave = document.getElementById('authKey').value;
-      const usr = document.getElementById('regUser').value;
 
+      // Clave requerida para autorizar el ingreso
       if (clave !== "123456") {
         alert("❌ Clave de autorización incorrecta.");
         return;
       }
 
-      alert("✅ Usuario " + usr + " creado exitosamente.");
+      sessionStorage.setItem("usuarioAutenticado", "true");
       window.location.href = "index.html";
     }
   </script>
