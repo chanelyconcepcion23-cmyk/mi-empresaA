@@ -11,7 +11,6 @@
   <meta name="apple-mobile-web-app-title" content="Mi empresaA">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
-    /* Variables de Tema Claro/Oscuro */
     :root {
       --bg-body: #f4f4f6;
       --text-main: #222222;
@@ -41,25 +40,17 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s, color 0.3s; }
     
-    /* Layout Vertical (Sidebar) */
     .app-container { display: flex; flex: 1; flex-direction: column; }
-    
-    @media(min-width: 768px) {
-      .app-container { flex-direction: row; }
-    }
+    @media(min-width: 768px) { .app-container { flex-direction: row; } }
 
-    /* Menú Vertical / Sidebar */
     aside { background: var(--sidebar-bg); color: var(--sidebar-text); width: 100%; max-width: 100%; padding: 15px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
-    @media(min-width: 768px) {
-      aside { width: 250px; min-height: 100vh; position: sticky; top: 0; }
-    }
+    @media(min-width: 768px) { aside { width: 250px; min-height: 100vh; position: sticky; top: 0; } }
 
     .brand-box { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 12px; }
     .brand-logo { width: 45px; height: 45px; object-fit: contain; background: #fff; padding: 2px; border-radius: 50%; }
     .brand-titles h1 { font-size: 16px; color: #fff; margin: 0; }
     .brand-titles p { font-size: 11px; opacity: 0.8; margin: 0; }
 
-    /* Lista Vertical de Botones */
     nav { display: flex; flex-direction: column; gap: 6px; }
     nav button { background: rgba(255, 255, 255, 0.15); color: #fff; border: 0; padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 6px; text-align: left; cursor: pointer; transition: 0.2s; }
     nav button:hover { background: rgba(255, 255, 255, 0.3); }
@@ -67,7 +58,6 @@
 
     .theme-toggle-btn { background: rgba(0,0,0,0.2); margin-top: auto; border: 1px solid rgba(255,255,255,0.3); }
 
-    /* Área Principal de Contenido */
     main { flex: 1; padding: 20px; max-width: 1100px; }
     .card { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .hidden { display: none !important; }
@@ -75,7 +65,6 @@
     .stats { font-size: 16px; font-weight: bold; background: var(--stats-bg); padding: 14px; border-radius: 8px; border-left: 4px solid #2e7d32; text-align: center; }
     .wrap { overflow-x: auto; margin-top: 12px; }
     
-    /* Formularios y Botones */
     button, input, select { padding: 10px 12px; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-size: 13px; width: 100%; }
     button { background: #2e7d32; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
     button:hover { opacity: 0.9; }
@@ -83,21 +72,18 @@
     .secondary { background: #555555; color: #fff; }
     .btn-small { width: auto; padding: 5px 10px; font-size: 11px; }
 
-    /* Tablas */
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: #2e7d32; color: #fff; font-weight: 600; text-align: left; }
     th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-color); }
     tr:nth-child(even) { background-color: var(--table-stripe); }
     .warn { color: #b54708; font-weight: bold; }
 
-    /* Estilos Específicos para Cuadre de Cobro */
     .cuadre-header { background: #e8f5e9; color: #1b5e20; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; font-size: 15px; border-left: 5px solid #2e7d32; }
     body.dark-mode .cuadre-header { background: #1b3e20; color: #a5d6a7; border-left-color: #81c784; }
     .cuadre-table td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
     .cuadre-table tr:hover { background-color: rgba(46, 125, 50, 0.05); }
     .cuadre-footer { font-size: 16px; font-weight: bold; padding: 15px; border-top: 2px solid #2e7d32; margin-top: 10px; background: var(--stats-bg); border-radius: 0 0 6px 6px; }
 
-    /* Modales y Canvas */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 999; }
     .modal > div { background: var(--card-bg); color: var(--text-main); padding: 20px; border-radius: 8px; max-width: 380px; width: 100%; max-height: 90vh; overflow-y: auto; }
     canvas { border: 1px dashed #aaa; border-radius: 4px; background: #fff; touch-action: none; cursor: crosshair; }
@@ -116,7 +102,6 @@
 
   <div class="app-container">
     
-    <!-- BARRA NAVEGACIÓN VERTICAL (SIDEBAR) -->
     <aside>
       <div class="brand-box">
         <img id="appLogo" class="brand-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232e7d32' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>" alt="Logo">
@@ -145,10 +130,9 @@
       <button onclick="toggleDarkMode()" class="theme-toggle-btn">🌓 Cambiar Tema</button>
     </aside>
 
-    <!-- ÁREA DE CONTENIDO -->
     <main>
 
-      <!-- 1. INICIO -->
+      <!-- 1. INICIO CON BUSCADOR -->
       <section id="home" class="page card">
         <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('home')">🖨️ Imprimir</button>
         <h2 style="font-size:16px; margin-bottom:12px;">Resumen General</h2>
@@ -157,6 +141,17 @@
           <div class="stats">Préstamos Activos<br><span id="sl">0</span></div>
           <div class="stats">Total Cobrado<br><span id="sm">RD$0</span></div>
           <div class="stats">Total Pendiente<br><span id="ss">RD$0</span></div>
+        </div>
+
+        <div style="margin-top:25px; border-top:1px solid var(--border-color); padding-top:15px;">
+          <h3 style="font-size:15px; margin-bottom:10px;">🔍 Buscar Cliente</h3>
+          <input id="searchHome" type="text" placeholder="Escribe el nombre o cédula..." oninput="filterHomeClients()">
+          <div class="wrap">
+            <table>
+              <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Acción</th></tr></thead>
+              <tbody id="homeClientsList"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -216,7 +211,6 @@
             <input type="file" id="fotoCedula" accept="image/*">
           </div>
 
-          <!-- Módulo Cliente Viejo / Deuda Anterior -->
           <div class="box-old-client">
             <label style="font-weight:bold; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer;">
               <input type="checkbox" id="isOldClient" onchange="toggleOldClientFields()" style="width:auto;"> 👵/👴 ¿Es un Cliente Viejo (Con préstamo activo anterior)?
@@ -227,14 +221,13 @@
               <input id="oldQuotaVal" type="number" placeholder="Valor de cada Cuota (RD$)">
               <select id="oldFreq">
                 <option>Diaria</option>
-                <option>Semanal</option>
+                <option selected>Semanal</option>
                 <option>Quincenal</option>
                 <option>Mensual</option>
               </select>
             </div>
           </div>
 
-          <!-- Firma del Cliente -->
           <div style="grid-column: 1 / -1; margin-top: 5px;">
             <label style="display:block; font-weight:bold; font-size:12px; margin-bottom:5px;">✍️ Firma del Cliente:</label>
             <canvas id="canvasFirmaCliente" width="300" height="90"></canvas><br>
@@ -253,17 +246,17 @@
         </div>
       </section>
 
-      <!-- 5. PRÉSTAMOS -->
+      <!-- 5. PRÉSTAMOS (CON VALORES DEFAULT) -->
       <section id="loans" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Crear / Registrar Préstamo</h2>
         <div class="grid">
           <select id="lc"></select>
           <input id="lm" type="number" placeholder="Monto Prestado (RD$)">
-          <input id="li" type="number" placeholder="Interés % (ej: 20)">
-          <input id="ltq" type="number" placeholder="Total de cuotas (ej: 13)">
+          <input id="li" type="number" placeholder="Interés %" value="30">
+          <input id="ltq" type="number" placeholder="Total de cuotas" value="13">
           <select id="lf">
             <option>Diaria</option>
-            <option>Semanal</option>
+            <option selected>Semanal</option>
             <option>Quincenal</option>
             <option>Mensual</option>
           </select>
@@ -309,14 +302,18 @@
         </div>
       </section>
 
-      <!-- 7. COBROS -->
+      <!-- 7. COBROS (CON TIPO DE PAGO: EFECTIVO/TRANSFERENCIA) -->
       <section id="pay" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Registrar Cobro</h2>
         <div class="grid">
           <select id="pl"></select>
           <input id="pm" type="number" placeholder="Monto a cobrar">
+          <select id="pType">
+            <option value="Efectivo">💵 Efectivo</option>
+            <option value="Transferencia">🏦 Transferencia</option>
+          </select>
           <input id="pMora" type="number" placeholder="Mora (Opcional)" value="0">
-          <input id="pn" placeholder="Nota opcional">
+          <input id="pn" placeholder="Nota opcional" style="grid-column:1/-1;">
         </div>
         
         <div style="margin-top: 15px;">
@@ -334,7 +331,7 @@
         <h2 style="font-size:16px; margin-bottom:12px;">Cuadre de Cobro</h2>
         
         <div class="cuadre-header">
-          (+) Caja / Banco: <span id="qCajaBanco">RD$0</span> ✏️
+          (+) Caja / Banco: <span id="qCajaBanco">RD$0</span>
         </div>
 
         <div class="wrap">
@@ -349,15 +346,11 @@
                 <td style="text-align:right;" id="qEntregaPrestamos">(-) RD$0</td>
               </tr>
               <tr>
-                <td>Acta Notarial</td>
-                <td style="text-align:right;" id="qActaNotarial">(+) RD$0</td>
-              </tr>
-              <tr>
                 <td>Pagos de Mora</td>
                 <td style="text-align:right;" id="qPagosMora">(+) RD$0</td>
               </tr>
               <tr>
-                <td>Pagos Aplicados</td>
+                <td>Pagos Aplicados (Efectivo)</td>
                 <td style="text-align:right;" id="qPagosAplicados">(+) RD$0</td>
               </tr>
               <tr>
@@ -382,7 +375,7 @@
         <h2 style="font-size:16px; margin-bottom:12px;">Historial Completo de Pagos</h2>
         <div class="wrap">
           <table>
-            <thead><tr><th>Ticket</th><th>Fecha</th><th>Cliente</th><th>Monto</th><th>Mora</th><th>Acción</th></tr></thead>
+            <thead><tr><th>Ticket</th><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Monto</th><th>Mora</th><th>Acción</th></tr></thead>
             <tbody id="historyList"></tbody>
           </table>
         </div>
@@ -438,7 +431,7 @@
     </main>
   </div>
 
-  <!-- Ventana Modal Recibo / Imagen -->
+  <!-- Modal Recibo -->
   <div id="modal" class="hidden modal">
     <div>
       <div id="receiptContent"></div>
@@ -479,11 +472,10 @@
 
     function cerrarModal() { $('modal').classList.add('hidden'); }
 
-    /* Canvas Firma de Cobros */
+    /* Canvas Firmas */
     let tieneFirma = false;
     const canvas = $('canvasFirma');
     const ctx = canvas.getContext('2d');
-    let dibujando = false;
 
     function initCanvasEvents(c, context, setFlag) {
       let isDrawing = false;
@@ -509,7 +501,6 @@
     initCanvasEvents(canvas, ctx, v => tieneFirma = v);
     function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); tieneFirma = false; }
 
-    /* Canvas Firma de Cliente */
     let tieneFirmaCliente = false;
     const canvasCli = $('canvasFirmaCliente');
     const ctxCli = canvasCli.getContext('2d');
@@ -517,14 +508,10 @@
     function limpiarFirmaCliente() { ctxCli.clearRect(0, 0, canvasCli.width, canvasCli.height); ctxCli.beginPath(); tieneFirmaCliente = false; }
 
     function toggleOldClientFields() {
-      if ($('isOldClient').checked) {
-        $('oldClientFields').classList.remove('hidden');
-      } else {
-        $('oldClientFields').classList.add('hidden');
-      }
+      if ($('isOldClient').checked) $('oldClientFields').classList.remove('hidden');
+      else $('oldClientFields').classList.add('hidden');
     }
 
-    /* Cambio de Menú Vertical */
     function show(id) {
       document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
       document.querySelectorAll('nav button').forEach(x => x.classList.remove('active-tab'));
@@ -564,14 +551,12 @@
       }
       let cEx = client(id);
       let firmaData = tieneFirmaCliente ? canvasCli.toDataURL() : (cEx ? cEx.firma : null);
-
       let clientId = id || Date.now();
       let o = { id: clientId, name: n.value, ci: ci.value, tel: tel.value, addr: addr.value, route: cr.value, foto: fotoBase64 || (cEx ? cEx.foto : null), firma: firmaData };
       if (!o.name) return alert('Escribe el nombre del cliente');
 
       id ? D.clients = D.clients.map(x => x.id == id ? o : x) : D.clients.push(o);
 
-      /* Procesar Cliente Viejo si está marcado */
       if (!id && $('isOldClient').checked) {
         let mVal = +$('oldAmount').value || 0;
         let balVal = +$('oldBalance').value || 0;
@@ -622,7 +607,8 @@
       if (!id || m <= 0 || tq <= 0) return alert('Completa cliente, monto y cuotas');
       let total = m + (m * i / 100), quotaVal = Math.round(total / tq), paidBefore = prev * quotaVal, balance = Math.max(0, total - paidBefore);
       D.loans.push({ id: Math.floor(100000 + Math.random() * 900000), clientId: id, amount: m, total, balance, quota: quotaVal, totalQuotas: tq, paidQuotas: prev, freq: lf.value, date: fecha, endDate: fechaFin, active: balance > 0 });
-      save(); render(); alert('Préstamo registrado'); lm.value = li.value = ltq.value = lprev.value = lenddate.value = '';
+      save(); render(); alert('Préstamo registrado'); 
+      lm.value = ''; li.value = '30'; ltq.value = '13'; lprev.value = '0'; lenddate.value = '';
     }
 
     function openRoute() {
@@ -639,17 +625,23 @@
     }
 
     function payLoan() {
-      let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0;
+      let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0, payType = $('pType').value;
       if (!l || m <= 0) return alert('Selecciona el préstamo y el monto');
-      let cuotasCobradas = Math.max(1, Math.round(m / l.quota)), cuotasDetalle = [];
+      
+      let cuotasCobradas = Math.max(1, Math.round(m / l.quota));
+      let cuotasDetalle = [];
       for (let i = 1; i <= cuotasCobradas; i++) { cuotasDetalle.push(l.paidQuotas + i); }
-      l.paidQuotas += cuotasCobradas; l.balance = Math.max(0, l.balance - m); if (l.balance <= 0) l.active = false;
+      l.paidQuotas += cuotasCobradas; 
+      l.balance = Math.max(0, l.balance - m); 
+      if (l.balance <= 0) l.active = false;
 
       let p = {
         id: Date.now(), ticket: Math.floor(1000000000000000 + Math.random() * 9000000000000000),
-        loanId: l.id, amount: m, mora, total: m + mora, date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        loanId: l.id, amount: m, mora, total: m + mora, type: payType,
+        date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
         routeId: D.route?.id || null, note: pn.value, firma: tieneFirma ? canvas.toDataURL() : null, cuotasLista: cuotasDetalle, montoPorCuota: l.quota
       };
+      
       D.payments.push(p); save(); pm.value = pn.value = pMora.value = ''; limpiarFirma(); render();
       mostrarReciboModal(p);
     }
@@ -674,33 +666,101 @@
       $('modal').classList.remove('hidden');
     }
 
+    /* FORMATO DEL RECIBO MEJORADO Y DETALLADO */
     function mostrarReciboModal(p) {
       let l = D.loans.find(x => x.id == p.loanId), c = client(l?.clientId);
+      let cobradorActual = D.workers.find(w => w.name === D.route?.collector) || {};
+      let logoUsar = D.company.logo || defaultLogo;
+
+      let desgloseHTML = "";
+      if (p.cuotasLista && p.cuotasLista.length > 1) {
+        desgloseHTML = `<div style="margin: 6px 0; color: #222222; font-size: 13px;"><b>Cuotas Pagadas Juntas:</b><br>`;
+        p.cuotasLista.forEach(num => {
+          desgloseHTML += `• Cuota #${num}: <b>${money(p.montoPorCuota)}</b><br>`;
+        });
+        desgloseHTML += `</div>`;
+      } else if (p.cuotasLista && p.cuotasLista.length === 1) {
+        desgloseHTML = `<div style="color: #222222; font-size: 14px; margin: 4px 0;">Cuota Pagada ...<b>#${p.cuotasLista[0]}</b>: <b>${money(p.amount)}</b></div>`;
+      }
+
       $('receiptContent').innerHTML = `
-        <div style="font-family:'Courier New', monospace; font-size:13px; text-align:left;">
-          <div style="text-align:center;">
-            <strong style="font-size:18px;">RECIBO DE PAGO</strong><br>
-            <small>${p.date}</small>
+        <div style="width: 100%; font-family: 'Courier New', monospace; font-size: 13px; text-align: left; color: #111111; line-height: 1.4;">
+          <div style="text-align: center; margin-top: 5px;">
+            <img src="${logoUsar}" style="width:50px; height:50px; border-radius:50%; margin-bottom:4px;"><br>
+            <div style="font-size: 18px; font-weight: 900; color: #000000;">RECIBO DE PAGO</div>
+            <div style="font-size: 12px; color: #333333;">${p.date}</div>
           </div>
-          <hr>
-          <div><strong>${D.company.name}</strong></div>
-          <div>Cliente: <b>${c?.name || ''}</b></div>
-          <div>Ticket: ${p.ticket}</div>
-          <div>Monto Pagado: <b>${money(p.total)}</b></div>
-          <div>Balance Restante: <b>${money(l?.balance || 0)}</b></div>
-          ${p.firma ? `<div style="margin-top:10px; text-align:center;"><small>Firma Pago:</small><br><img src="${p.firma}" style="max-width:150px;"></div>` : ''}
-          <hr>
-          <div style="text-align:center;"><small>⚠️ SIN RECIBO NO HAY RECLAMOS</small></div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="text-align: center; color: #222222;">
+            <strong style="font-size: 20px; text-transform: uppercase; display: block; font-weight: 900; color: #000000; margin-bottom: 2px;">${D.company.name}</strong>
+            Zona: <b>${c?.route || D.route?.name || 'General'}</b><br>
+            Cobrado por: <b>${D.route?.collector || 'Oficina'}</b><br>
+            Método: <b>${p.type || 'Efectivo'}</b>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="font-size: 13px; color: #222222;">
+            <div style="margin-bottom: 6px; border-bottom: 1px solid #000; padding-bottom: 4px;">
+              <span style="font-size: 11px; font-weight: bold; color: #444; display: block;">CLIENTE:</span>
+              <span style="font-size: 18px; font-weight: 900; text-transform: uppercase; color: #000000; display: block;">${c?.name || ''}</span>
+            </div>
+            <div><b>Ticket . :</b> ${p.ticket}</div>
+            <div><b>Préstamo No. :</b> P${l?.id || ''}</div>
+            <div><b>Monto Prestado:</b> ${money(l?.amount)}</div>
+            <div><b>Inicio:</b> ${l?.date || 'N/A'} | <b>Fin:</b> ${l?.endDate || 'N/A'}</div>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          ${desgloseHTML}
+          ${p.mora > 0 ? `<div style="color: #222222;">Mora: <b>${money(p.mora)}</b></div>` : ''}
+
+          <div style="display: flex; justify-content: space-between; font-weight: 900; margin-top: 6px; font-size: 14px; color: #000000; border-top: 1px solid #000; padding-top: 4px;">
+            <span>TOTAL PAGADO:</span>
+            <span>${money(p.total)}</span>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="font-size: 15px; font-weight: 900; color: #000000; margin: 6px 0;">
+            BALANCE RESTANTE: ${money(l?.balance || 0)}
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="text-align: center; font-size: 11px; margin-top: 8px; color: #111111;">
+            <b style="font-size: 12px; color: #000000;">⚠️ SIN RECIBO, NO HAY RECLAMOS!</b><br>
+            <span>Conserve este comprobante como soporte legal.</span>
+          </div>
+
+          ${p.firma ? `<div style="margin-top:10px; text-align:center;"><img src="${p.firma}" style="width:120px; height:45px; border-bottom:1px solid #000;"><br><span style="font-size:10px; font-weight: bold; color: #000;">Firma Cliente</span></div>` : ''}
         </div>`;
       $('modal').classList.remove('hidden');
     }
 
     function enviarWhatsApp() {
-      let p = D.payments[D.payments.length - 1]; if (!p) return;
+      let p = D.payments[D.payments.length - 1]; if (!p) return alert("No hay pagos recientes");
       let l = D.loans.find(x => x.id == p.loanId), c = client(l?.clientId);
       if (!c?.tel) return alert('El cliente no posee teléfono');
-      let mensaje = `*${D.company.name}*%0A*RECIBO:* ${p.ticket}%0A*CLIENTE:* ${c.name}%0A*PAGO:* ${money(p.total)}%0A*BALANCE:* ${money(l.balance)}`;
+      let mensaje = `*${D.company.name}*%0A*RECIBO:* ${p.ticket}%0A*CLIENTE:* ${c.name}%0A*PAGO (${p.type || 'Efectivo'}):* ${money(p.total)}%0A*BALANCE RESTANTE:* ${money(l.balance)}%0A_⚠️ SIN RECIBO NO HAY RECLAMOS_`;
       window.open(`https://api.whatsapp.com/send?phone=${c.tel.replace(/\D/g, '')}&text=${mensaje}`, '_blank');
+    }
+
+    function filterHomeClients() {
+      let q = $('searchHome').value.toLowerCase().trim();
+      let list = D.clients.filter(x => x.name.toLowerCase().includes(q) || (x.ci && x.ci.includes(q)));
+      $('homeClientsList').innerHTML = list.map(x => `
+        <tr>
+          <td><b>${x.name}</b></td>
+          <td>${x.ci || '-'}</td>
+          <td>${x.tel || '-'}</td>
+          <td>${x.route || '-'}</td>
+          <td><button class="btn-small" onclick="editClient(${x.id})">Ver / Editar</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5">No se encontraron clientes</td></tr>';
     }
 
     function imprimirSeccion(id) {
@@ -724,10 +784,12 @@
       brand.textContent = D.company.name; tag.textContent = D.company.slogan; $('appLogo').src = D.company.logo || defaultLogo;
       cn.value = D.company.name; ct.value = D.company.phone; cd.value = D.company.address; cs.value = D.company.slogan;
 
+      if (!$('ldate').value) $('ldate').value = today();
+
       workersList.innerHTML = D.workers.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.role}</td><td><button class="btn-small" onclick="editWorker(${x.id})">Editar</button> <button class="danger btn-small" onclick="delWorker(${x.id})">Eliminar</button></td></tr>`).join('');
       rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name}</option>`).join('');
 
-      clientsList.innerHTML = D.clients.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.firma ? `<button class="btn-small secondary" onclick="verFirmaClienteModal(${x.id})">Ver Firma</button>` : '❌'}</td><td>${x.foto ? '✅' : '❌'}</td><td><button class="btn-small" onclick="editClient(${x.id})">Editar</button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');
+      clientsList.innerHTML = D.clients.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.firma ? `<button class="btn-small secondary" onclick="verFirmaClienteModal(${x.id})">Ver Firma</button>` : '❌'}</td><td>${x.foto ? '✅' : '❌'}</td><td><button class="btn-small" onclick="editClient(${x.id})">Editar </button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');
       lc.innerHTML = '<option value="">Seleccione cliente</option>' + D.clients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
 
       loansList.innerHTML = D.loans.map(x => `<tr><td>${client(x.clientId)?.name || ''}</td><td>${x.date || '-'}</td><td>${money(x.amount)}</td><td>${money(x.total)}</td><td>${x.paidQuotas}/${x.totalQuotas}</td><td>${money(x.balance)}</td><td>${x.active ? 'Activo' : 'Pagado'}</td></tr>`).join('');
@@ -735,7 +797,7 @@
 
       historyList.innerHTML = D.payments.map(x => {
         let l = D.loans.find(y => y.id == x.loanId);
-        return `<tr><td>${x.ticket}</td><td>${x.date}</td><td>${client(l?.clientId)?.name || ''}</td><td>${money(x.amount)}</td><td>${money(x.mora)}</td><td><button class="btn-small" onclick='mostrarReciboModal(${JSON.stringify(x)})'>Ver Recibo</button></td></tr>`;
+        return `<tr><td>${x.ticket}</td><td>${x.date}</td><td>${client(l?.clientId)?.name || ''}</td><td><b>${x.type || 'Efectivo'}</b></td><td>${money(x.amount)}</td><td>${money(x.mora)}</td><td><button class="btn-small" onclick='mostrarReciboModal(${JSON.stringify(x)})'>Ver Recibo</button></td></tr>`;
       }).reverse().join('');
 
       expensesList.innerHTML = D.expenses.map(x => `<tr><td>${x.date}</td><td>${x.concept}</td><td>${money(x.amount)}</td><td><button class="danger btn-small" onclick="delExpense(${x.id})">Eliminar</button></td></tr>`).join('');
@@ -746,33 +808,40 @@
         return `<tr><td>${c?.name || ''}</td><td>${c?.tel || ''}</td><td>${money(x.balance)}</td><td>${x.endDate}</td><td class="warn">Atrasado</td></tr>`;
       }).join('') || '<tr><td colspan="5">No hay préstamos en atraso</td></tr>';
 
+      filterHomeClients();
+
       sc.textContent = D.clients.length;
       sl.textContent = D.loans.filter(x => x.active).length;
       sm.textContent = money(D.payments.reduce((a, x) => a + (x.total || x.amount), 0));
       ss.textContent = money(D.loans.reduce((a, x) => a + x.balance, 0));
 
       let totalCobrado = D.payments.reduce((a, x) => a + (x.total || x.amount), 0);
+      let totalEfectivo = D.payments.filter(x => (x.type || 'Efectivo') === 'Efectivo').reduce((a, x) => a + (x.total || x.amount), 0);
+      let totalTransferencia = D.payments.filter(x => x.type === 'Transferencia').reduce((a, x) => a + (x.total || x.amount), 0);
+      
       let totalGastado = D.expenses.reduce((a, x) => a + x.amount, 0);
       let totalMora = D.payments.reduce((a, x) => a + (x.mora || 0), 0);
       let totalEntregado = D.loans.reduce((a, x) => a + x.amount, 0);
       let totalPendiente = D.loans.reduce((a, x) => a + x.balance, 0);
 
-      /* Cuadre de Cobro */
+      /* Cuadre de Cobro con Transferencia y Efectivo */
       $('qPrestamosXCobrar').textContent = '(-) ' + money(totalPendiente);
       $('qEntregaPrestamos').textContent = '(-) ' + money(totalEntregado);
       $('qPagosMora').textContent = '(+) ' + money(totalMora);
-      $('qPagosAplicados').textContent = '(+) ' + money(totalCobrado - totalMora);
+      $('qPagosAplicados').textContent = '(+) ' + money(totalEfectivo);
+      $('qPagosTransferencia').textContent = '(+) ' + money(totalTransferencia);
       $('qGastosAplicados').textContent = '(-) ' + money(totalGastado);
       
-      let efectivoTotal = totalCobrado - totalGastado;
-      $('qCajaBanco').textContent = money(efectivoTotal);
-      $('qDineroEfectivo').textContent = money(efectivoTotal);
+      let efectivoEnCaja = totalEfectivo - totalGastado;
+      $('qCajaBanco').textContent = money(totalCobrado);
+      $('qDineroEfectivo').textContent = money(efectivoEnCaja);
 
       cashBox.innerHTML = `
         <div class="grid">
-          <div class="stats">Entradas (Cobros)<br>${money(totalCobrado)}</div>
-          <div class="stats" style="border-left-color:#b42318;">Salidas (Gastos)<br>${money(totalGastado)}</div>
-          <div class="stats" style="border-left-color:#2e7d32;">Efectivo en Caja<br>${money(efectivoTotal)}</div>
+          <div class="stats">Efectivo Cobrado<br>${money(totalEfectivo)}</div>
+          <div class="stats">Transferencias<br>${money(totalTransferencia)}</div>
+          <div class="stats" style="border-left-color:#b42318;">Gastos Salida<br>${money(totalGastado)}</div>
+          <div class="stats" style="border-left-color:#2e7d32;">Efectivo Físico<br>${money(efectivoEnCaja)}</div>
         </div>`;
 
       reportBox.innerHTML = `
