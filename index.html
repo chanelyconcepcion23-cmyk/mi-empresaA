@@ -1,639 +1,688 @@
-Aquí tienes el código **100% completo, entero y unificado** en un solo archivo index.html.
-Incluye la vista original del **Cuadre de Cobro**, la pantalla de **Registro de Gastos**, las secciones del menú lateral (**Préstamos** y **Clientes**), la **Calculadora Flotante** accesible desde la cabecera, y los nuevos campos dinámicos (**Pagos Transferencia** y **Gastos Aplicado**).
-```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mi-empresaA | Control de Préstamos</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mi empresaA</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
+  <meta name="theme-color" content="#8D3B43">
+  <meta name="apple-mobile-web-app-title" content="Mi empresaA">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #e5e5e5; color: #222; }
+    
+    /* Header Superior */
+    header { background: #8D3B43; color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .header-brand { display: flex; align-items: center; gap: 10px; }
+    .header-logo { width: 42px; height: 42px; object-fit: contain; background: #fff; padding: 2px; border-radius: 50%; }
+    .header-titles h1 { font-size: 16px; margin: 0; color: #fff; }
+    .header-titles p { font-size: 11px; margin: 0; opacity: 0.85; }
 
-    body {
-      background-color: #dcdcdc;
-      color: #333333;
-      user-select: none;
-    }
-
-    /* Navbar Superior */
-    .app-header {
-      background-color: #8D3B43;
-      color: #ffffff;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-left, .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .app-title {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    /* Menú Lateral */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
-      background-color: #ffffff;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-      transition: left 0.3s ease;
-      z-index: 200;
-      padding-top: 50px;
-    }
-
-    .sidebar.open {
-      left: 0;
-    }
-
-    .sidebar-item {
-      padding: 15px 20px;
-      color: #333;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .sidebar-item:hover {
-      background-color: #f5f5f5;
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 150;
-    }
-
-    .overlay.show {
-      display: block;
-    }
+    /* Navegación Organizada */
+    nav { background: #ffffff; display: flex; gap: 4px; overflow-x: auto; padding: 8px 12px; border-bottom: 1px solid #ccc; -webkit-overflow-scrolling: touch; }
+    nav button { background: #f0f0f0; color: #444; border: 1px solid #ddd; padding: 7px 12px; font-size: 12px; font-weight: 600; border-radius: 5px; white-space: nowrap; cursor: pointer; flex-shrink: 0; }
+    nav button.active-tab { background: #8D3B43; color: #fff; border-color: #8D3B43; }
 
     /* Contenedor Principal */
-    .main-screen {
-      background-color: #e5e5e5;
-      min-height: calc(100vh - 100px);
-      padding: 15px 15px 80px 15px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
+    main { max-width: 1000px; margin: auto; padding: 15px; }
+    .card { background: #fff; padding: 18px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .hidden { display: none !important; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .stats { font-size: 18px; font-weight: bold; background: #f9f9f9; padding: 12px; border-radius: 8px; border-left: 4px solid #8D3B43; text-align: center; }
+    .wrap { overflow-x: auto; margin-top: 10px; }
+    
+    /* Formularios y Botones */
+    button, input, select { padding: 9px 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 13px; width: 100%; }
+    button { background: #8D3B43; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    .danger { background: #b42318; }
+    .secondary { background: #555555; }
+    .btn-small { width: auto; padding: 5px 10px; font-size: 11px; }
 
-    .vista {
-      display: none;
-    }
+    /* Tablas */
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th { background: #8D3B43; color: #fff; font-weight: 600; text-align: left; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+    .warn { color: #b54708; font-weight: bold; }
 
-    .vista.activa {
-      display: block;
-    }
-
-    .titulo-seccion {
-      text-align: center;
-      color: #8D3B43;
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      margin-top: 10px;
-      margin-bottom: 25px;
-    }
-
-    /* Estilos del Cuadre de Cobro */
-    .caja-banco-row {
-      font-size: 15px;
-      color: #333333;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #8D3B43;
-      margin-bottom: 22px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .icon-edit {
-      color: #2196F3;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .lista-cuadre {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .fila-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13.5px;
-      color: #444444;
-      cursor: pointer;
-      padding: 4px 0;
-    }
-
-    .fila-item:hover {
-      background-color: rgba(0,0,0,0.04);
-    }
-
-    .monto {
-      text-align: right;
-    }
-
-    .monto.suma { color: #333333; }
-    .monto.resta { color: #8D3B43; }
-
-    .efectivo-row {
-      margin-top: 25px;
-      padding-top: 12px;
-      border-top: 1px solid #bbbbbb;
-      font-size: 15px;
-      color: #333333;
-    }
-
-    /* Estilos del Módulo de Gastos */
-    .form-gasto {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .btn-guardar-gasto {
-      width: 100%;
-      background-color: #8D3B43;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .tabla-gastos {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 6px;
-      overflow: hidden;
-      font-size: 13px;
-    }
-
-    .tabla-gastos th, .tabla-gastos td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    .tabla-gastos th {
-      background-color: #f0f0f0;
-      color: #555;
-    }
-
-    /* Calculadora Flotante */
-    .calc-modal {
-      display: none;
-      position: fixed;
-      top: 60px;
-      right: 15px;
-      width: 230px;
-      background: #2b2b2b;
-      border-radius: 8px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      z-index: 300;
-    }
-
-    .calc-screen {
-      width: 100%;
-      height: 38px;
-      background: #111;
-      color: #fff;
-      text-align: right;
-      padding: 5px 8px;
-      font-size: 18px;
-      border: none;
-      border-radius: 4px;
-      margin-bottom: 10px;
-    }
-
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-
-    .calc-btn {
-      padding: 10px 0;
-      background: #444;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .calc-btn.op { background: #8D3B43; }
-    .calc-btn.equal { background: #2196F3; grid-column: span 2; }
-    .calc-btn.clear { background: #d32f2f; }
-
-    /* Tarjetas Auxiliares (Préstamos y Clientes) */
-    .card-placeholder {
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 6px;
-      text-align: center;
-      color: #666;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    /* Barra Inferior Fija */
-    .footer-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #dcdcdc;
-      display: flex;
-      justify-content: flex-end;
-      gap: 25px;
-      border-top: 1px solid #cccccc;
-      padding: 6px 20px;
-      z-index: 90;
-    }
-
-    .status-tab {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 11px;
-      color: #555555;
-    }
-
-    .status-tab.activo {
-      color: #8D3B43;
-      font-weight: bold;
-    }
-
-    .status-tab small {
-      font-size: 11px;
-      margin-top: 1px;
+    /* Modales y Firma */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 999; }
+    .modal > div { background: #fff; padding: 20px; border-radius: 8px; max-width: 380px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    canvas { border: 1px dashed #aaa; border-radius: 4px; background: #fff; touch-action: none; cursor: crosshair; }
+    
+    @media print {
+      body > *:not(#modal) { display: none !important; }
+      #modal { position: static; background: #fff; padding: 0; display: block !important; }
+      #modal > div { padding: 0; border-radius: 0; box-shadow: none; max-width: 100%; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Overlay para cerrar el menú -->
-  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-  <!-- Menú Lateral -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-item" onclick="cambiarVista('cuadre')">Cuadre de Cobro</div>
-    <div class="sidebar-item" onclick="cambiarVista('gastos')">Registro de Gastos</div>
-    <div class="sidebar-item" onclick="cambiarVista('prestamos')">Préstamos</div>
-    <div class="sidebar-item" onclick="cambiarVista('clientes')">Clientes</div>
-  </aside>
-
-  <!-- Encabezado de la Aplicación -->
-  <header class="app-header">
-    <div class="header-left">
-      <button class="icon-btn" onclick="toggleSidebar()">&#9776;</button>
-      <span class="app-title">mi-empresaA | Control de Préstamos</span>
-    </div>
-    <div class="header-right">
-      <button class="icon-btn" onclick="toggleCalculadora()" title="Calculadora">&#128430;</button>
-      <button class="icon-btn" onclick="sincronizarDatos()" title="Sincronizar Nube">&#9729;</button>
+  <!-- Encabezado Principal -->
+  <header>
+    <div class="header-brand">
+      <img id="appLogo" class="header-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238D3B43' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>" alt="Logo">
+      <div class="header-titles">
+        <h1 id="brand">Mi empresaA</h1>
+        <p id="tag">Control de préstamos, clientes y rutas</p>
+      </div>
     </div>
   </header>
+  
+  <!-- Barra de Navegación -->
+  <nav>
+    <button id="tab-home" onclick="show('home')" class="active-tab">Inicio</button>
+    <button id="tab-company" onclick="show('company')">Empresa</button>
+    <button id="tab-workers" onclick="show('workers')">Trabajadores</button>
+    <button id="tab-clients" onclick="show('clients')">Clientes</button>
+    <button id="tab-loans" onclick="show('loans')">Préstamos</button>
+    <button id="tab-route" onclick="show('route')">Ruta</button>
+    <button id="tab-pay" onclick="show('pay')">Cobros</button>
+    <button id="tab-cash" onclick="show('cash')">Caja</button>
+    <button id="tab-reports" onclick="show('reports')">Reportes</button>
+  </nav>
 
-  <!-- Ventana Flotante de Calculadora -->
-  <div id="calculadora" class="calc-modal">
-    <input type="text" id="calcDisplay" class="calc-screen" readonly value="0">
-    <div class="calc-grid">
-      <button class="calc-btn clear" onclick="calcClear()">C</button>
-      <button class="calc-btn op" onclick="calcInput('/')">/</button>
-      <button class="calc-btn op" onclick="calcInput('*')">*</button>
-      <button class="calc-btn op" onclick="calcInput('-')">-</button>
+  <!-- Módulos / Páginas -->
+  <main>
+
+    <!-- INICIO -->
+    <section id="home" class="page card">
+      <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('home')">🖨️ Imprimir</button>
+      <h2 style="font-size:16px; margin-bottom:12px;">Resumen General</h2>
+      <div class="grid">
+        <div class="stats">Clientes<br><span id="sc">0</span></div>
+        <div class="stats">Préstamos Activos<br><span id="sl">0</span></div>
+        <div class="stats">Total Cobrado<br><span id="sm">RD$0</span></div>
+        <div class="stats">Total Pendiente<br><span id="ss">RD$0</span></div>
+      </div>
+    </section>
+
+    <!-- EMPRESA -->
+    <section id="company" class="page card hidden">
+      <h2 style="font-size:16px; margin-bottom:12px;">Configuración de la Empresa</h2>
+      <div class="grid">
+        <input id="cn" placeholder="Nombre de empresa">
+        <input id="ct" placeholder="Teléfono">
+        <input id="cd" placeholder="Dirección">
+        <input id="cs" placeholder="Eslogan">
+        <div>
+          <label style="font-size:11px; display:block; margin-bottom:2px;">Cambiar Logo Personalizado:</label>
+          <input type="file" id="logoInput" accept="image/*">
+        </div>
+        <button onclick="saveCompany()" style="grid-column:1/-1;">Guardar Cambios</button>
+      </div>
+    </section>
+
+    <!-- TRABAJADORES -->
+    <section id="workers" class="page card hidden">
+      <h2 style="font-size:16px; margin-bottom:12px;">Registro de Trabajadores / Cobradores</h2>
+      <input type="hidden" id="editWorkerId">
+      <div class="grid">
+        <input id="wn" placeholder="Nombre completo">
+        <input id="wci" placeholder="Cédula">
+        <input id="wtel" placeholder="Teléfono">
+        <select id="wrole">
+          <option value="Cobrador">Cobrador</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+        <button onclick="saveWorker()">Guardar Trabajador</button>
+        <button class="secondary" onclick="clearWorker()">Cancelar</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Cargo</th><th>Acciones</th></tr></thead>
+          <tbody id="workersList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section id="clients" class="page card hidden">
+      <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('clients')">🖨️ Imprimir Lista</button>
+      <h2 style="font-size:16px; margin-bottom:12px;">Directorio de Clientes</h2>
+      <input type="hidden" id="edit">
+      <div class="grid">
+        <input id="n" placeholder="Nombre completo">
+        <input id="ci" placeholder="Cédula">
+        <input id="tel" placeholder="Teléfono">
+        <input id="addr" placeholder="Dirección">
+        <input id="cr" placeholder="Ruta asignada">
+        <div>
+          <label style="font-size:11px; display:block; margin-bottom:2px;">Foto Cédula:</label>
+          <input type="file" id="fotoCedula" accept="image/*">
+        </div>
+        <button onclick="saveClient()">Guardar Cliente</button>
+        <button class="secondary" onclick="clearClient()">Cancelar</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Foto</th><th>Acciones</th></tr></thead>
+          <tbody id="clientsList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PRÉSTAMOS -->
+    <section id="loans" class="page card hidden">
+      <h2 style="font-size:16px; margin-bottom:12px;">Crear / Registrar Préstamo</h2>
+      <div class="grid">
+        <select id="lc"></select>
+        <input id="lm" type="number" placeholder="Monto Prestado (RD$)">
+        <input id="li" type="number" placeholder="Interés % (ej: 20)">
+        <input id="ltq" type="number" placeholder="Total de cuotas (ej: 13)">
+        <select id="lf">
+          <option>Diaria</option>
+          <option>Semanal</option>
+          <option>Quincenal</option>
+          <option>Mensual</option>
+        </select>
+        <div>
+          <label style="font-size:11px; display:block; margin-bottom:2px;">Fecha de inicio / entrega:</label>
+          <input id="ldate" type="date">
+        </div>
+        <div>
+          <label style="font-size:11px; display:block; margin-bottom:2px;">Fecha de término / vencimiento:</label>
+          <input id="lenddate" type="date">
+        </div>
+        <div>
+          <label style="font-size:11px; display:block; margin-bottom:2px;">Cuotas ya pagadas (Si es antiguo):</label>
+          <input id="lprev" type="number" placeholder="Ej: 3" value="0">
+        </div>
+        <button onclick="saveLoan()" style="grid-column:1/-1;">Guardar Préstamo</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Inicio</th><th>Monto</th><th>Total</th><th>Cuotas</th><th>Saldo</th><th>Estado</th></tr></thead>
+          <tbody id="loansList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RUTA -->
+    <section id="route" class="page card hidden">
+      <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('route')">🖨️ Imprimir Ruta</button>
+      <h2 style="font-size:16px; margin-bottom:12px;">Abrir / Cerrar Ruta</h2>
+      <div class="grid">
+        <input id="rn" placeholder="Nombre de ruta">
+        <select id="rc"></select>
+        <input id="rd" type="date">
+        <button onclick="openRoute()">Abrir Ruta</button>
+        <button class="danger" onclick="closeRoute()">Cerrar Ruta</button>
+      </div>
+      <div id="routeInfo" style="margin-top:10px;"></div>
+      <div class="wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Cuota Pagada</th><th>Cuota Valor</th><th>Saldo</th><th>Estado</th></tr></thead>
+          <tbody id="routeList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- COBROS -->
+    <section id="pay" class="page card hidden">
+      <h2 style="font-size:16px; margin-bottom:12px;">Registrar Cobro</h2>
+      <div class="grid">
+        <select id="pl"></select>
+        <input id="pm" type="number" placeholder="Monto a cobrar">
+        <input id="pMora" type="number" placeholder="Mora (Opcional)" value="0">
+        <input id="pn" placeholder="Nota opcional">
+      </div>
       
-      <button class="calc-btn" onclick="calcInput('7')">7</button>
-      <button class="calc-btn" onclick="calcInput('8')">8</button>
-      <button class="calc-btn" onclick="calcInput('9')">9</button>
-      <button class="calc-btn op" onclick="calcInput('+')">+</button>
-
-      <button class="calc-btn" onclick="calcInput('4')">4</button>
-      <button class="calc-btn" onclick="calcInput('5')">5</button>
-      <button class="calc-btn" onclick="calcInput('6')">6</button>
-      <button class="calc-btn" onclick="calcInput('.')">.</button>
-
-      <button class="calc-btn" onclick="calcInput('1')">1</button>
-      <button class="calc-btn" onclick="calcInput('2')">2</button>
-      <button class="calc-btn" onclick="calcInput('3')">3</button>
-      <button class="calc-btn" onclick="calcInput('0')">0</button>
-
-      <button class="calc-btn equal" onclick="calcEqual()">=</button>
-    </div>
-  </div>
-
-  <!-- Contenedor de Vistas Principal -->
-  <main class="main-screen">
-
-    <!-- VISTA 1: CUADRE DE COBRO -->
-    <section id="vista-cuadre" class="vista activa">
-      <h2 class="titulo-seccion">CUADRE DE COBRO</h2>
-
-      <div class="caja-banco-row">
-        <span>(+) Caja / Banco: <strong id="txtCajaBanco">$0</strong></span>
-        <span class="icon-edit" onclick="modificarValor('cajaInicial', 'Caja / Banco Inicial')">&#9998;</span>
+      <div style="margin-top: 15px;">
+        <label style="display:block; font-weight:bold; font-size:12px; margin-bottom:5px;">Firma del Cliente (Opcional):</label>
+        <canvas id="canvasFirma" width="280" height="80"></canvas><br>
+        <button type="button" class="secondary btn-small" onclick="limpiarFirma()" style="margin-top:5px;">Limpiar Firma</button>
       </div>
 
-      <div class="lista-cuadre">
-        <div class="fila-item" onclick="modificarValor('prestamosXCobrar', 'Prestamos X Cobrar')">
-          <span>Prestamos X Cobrar</span>
-          <span class="monto" id="txtPrestamosXCobrar"></span>
-        </div>
-
-        <div class="fila-item" onclick="modificarValor('entregaPrestamos', 'Entrega de Prestamos')">
-          <span>Entrega de Prestamos</span>
-          <span class="monto resta" id="txtEntregaPrestamos">(-) $1,000</span>
-        </div>
-
-        <div class="fila-item" onclick="modificarValor('actaNotarial', 'Acta Notarial')">
-          <span>Acta Notarial</span>
-          <span class="monto resta" id="txtActaNotarial">(-) $0</span>
-        </div>
-
-        <div class="fila-item" onclick="modificarValor('pagosMora', 'Pagos de Mora')">
-          <span>Pagos de Mora</span>
-          <span class="monto suma" id="txtPagosMora">(+) $0</span>
-        </div>
-
-        <div class="fila-item" onclick="modificarValor('pagosAplicado', 'Pagos Aplicado')">
-          <span>Pagos Aplicado</span>
-          <span class="monto suma" id="txtPagosAplicado">(+) $0</span>
-        </div>
-
-        <div class="fila-item" onclick="modificarValor('pagosTransferencia', 'Pagos Transferencia')">
-          <span>Pagos Transferencia</span>
-          <span class="monto suma" id="txtPagosTransferencia">(+) $0</span>
-        </div>
-
-        <div class="fila-item" onclick="cambiarVista('gastos')">
-          <span>Gastos Aplicado</span>
-          <span class="monto resta" id="txtGastosAplicado">(-) $0</span>
-        </div>
-      </div>
-
-      <div class="efectivo-row">
-        <span>(= ) Dinero en Efectivo: <strong id="txtDineroEfectivo">$0</strong></span>
-      </div>
+      <button onclick="payLoan()" style="margin-top:15px; width:100%; font-size:15px;">Generar Recibo</button>
     </section>
 
-    <!-- VISTA 2: REGISTRO DE GASTOS -->
-    <section id="vista-gastos" class="vista">
-      <h2 class="titulo-seccion">REGISTRO DE GASTOS</h2>
-
-      <div class="form-gasto">
-        <div class="form-group">
-          <label>Concepto / Detalle del Gasto</label>
-          <input type="text" id="gastoConcepto" placeholder="Ej. Combustible, Almuerzo...">
-        </div>
-        <div class="form-group">
-          <label>Monto ($)</label>
-          <input type="number" id="gastoMonto" placeholder="0.00">
-        </div>
-        <button class="btn-guardar-gasto" onclick="agregarGasto()">Registrar Gasto</button>
-      </div>
-
-      <table class="tabla-gastos">
-        <thead>
-          <tr>
-            <th>Concepto</th>
-            <th style="text-align: right;">Monto</th>
-          </tr>
-        </thead>
-        <tbody id="listaGastosTabla">
-          <!-- Se agregan dinámicamente -->
-        </tbody>
-      </table>
+    <!-- CAJA -->
+    <section id="cash" class="page card hidden">
+      <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('cash')">🖨️ Imprimir Caja</button>
+      <h2 style="font-size:16px; margin-bottom:12px;">Caja Diaria</h2>
+      <div id="cashBox"></div>
     </section>
 
-    <!-- VISTA 3: PRÉSTAMOS -->
-    <section id="vista-prestamos" class="vista">
-      <h2 class="titulo-seccion">GUSTIÓN DE PRÉSTAMOS</h2>
-      <div class="card-placeholder">
-        <p>Módulo de registro y consulta de rutas de préstamos.</p>
-      </div>
-    </section>
-
-    <!-- VISTA 4: CLIENTES -->
-    <section id="vista-clientes" class="vista">
-      <h2 class="titulo-seccion">DIRECTORIO DE CLIENTES</h2>
-      <div class="card-placeholder">
-        <p>Módulo de administración de clientes activos.</p>
+    <!-- REPORTES -->
+    <section id="reports" class="page card hidden">
+      <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('reports')">🖨️ Imprimir Reportes</button>
+      <h2 style="font-size:16px; margin-bottom:12px;">Reportes y Respaldo</h2>
+      <div id="reportBox"></div>
+      <br>
+      <div style="display:flex; gap:10px;">
+        <button onclick="backup()">Descargar Respaldo</button>
+        <button class="secondary" onclick="restore.click()">Restaurar Respaldo</button>
+        <input id="restore" class="hidden" type="file" accept=".json" onchange="restoreData(event)">
       </div>
     </section>
 
   </main>
 
-  <!-- Barra de Estado Inferior -->
-  <footer class="footer-bar">
-    <div class="status-tab">
-      <span>Entregas</span>
-      <small id="barEntregas">$0</small>
+  <!-- Ventana Modal de Recibo -->
+  <div id="modal" class="hidden modal">
+    <div>
+      <div id="receiptContent"></div>
+      
+      <div class="no-print" style="margin-top:15px; display:flex; gap:5px; flex-wrap:wrap; justify-content:center;">
+        <button onclick="window.print()" style="flex:1;">🖨️ Imprimir</button>
+        <button onclick="enviarWhatsApp()" style="background:#25D366; color:#fff; flex:1;">💬 WhatsApp</button>
+        <button class="secondary" onclick="cerrarModal()" style="width:100%; margin-top:5px;">Cerrar</button>
+      </div>
     </div>
-    <div class="status-tab">
-      <span>Cobrado</span>
-      <small id="barCobrado">$0</small>
-    </div>
-    <div class="status-tab activo">
-      <span>Efectivo</span>
-      <small id="barEfectivo">$0</small>
-    </div>
-  </footer>
+  </div>
 
   <script>
-    let datos = {
-      cajaInicial: 0,
-      prestamosXCobrar: 0,
-      entregaPrestamos: 1000,
-      actaNotarial: 0,
-      pagosMora: 0,
-      pagosAplicado: 0,
-      pagosTransferencia: 0,
-      gastosAplicado: 0
-    };
-
-    let listaGastos = [];
-
-    function calcularYRenderizar() {
-      const entradasEfectivo = datos.pagosMora + datos.pagosAplicado;
-      const salidasEfectivo = datos.entregaPrestamos + datos.actaNotarial + datos.gastosAplicado;
-      
-      const efectivoReal = (datos.cajaInicial + entradasEfectivo) - salidasEfectivo;
-      const totalCajaBanco = efectivoReal + datos.pagosTransferencia;
-
-      const fmt = (num) => `$${num.toLocaleString('en-US')}`;
-
-      document.getElementById('txtCajaBanco').textContent = fmt(totalCajaBanco);
-      document.getElementById('txtPrestamosXCobrar').textContent = datos.prestamosXCobrar ? fmt(datos.prestamosXCobrar) : '';
-      document.getElementById('txtEntregaPrestamos').textContent = `(-) ${fmt(datos.entregaPrestamos)}`;
-      document.getElementById('txtActaNotarial').textContent = `(-) ${fmt(datos.actaNotarial)}`;
-      document.getElementById('txtPagosMora').textContent = `(+) ${fmt(datos.pagosMora)}`;
-      document.getElementById('txtPagosAplicado').textContent = `(+) ${fmt(datos.pagosAplicado)}`;
-      document.getElementById('txtPagosTransferencia').textContent = `(+) ${fmt(datos.pagosTransferencia)}`;
-      document.getElementById('txtGastosAplicado').textContent = `(-) ${fmt(datos.gastosAplicado)}`;
-      document.getElementById('txtDineroEfectivo').textContent = fmt(efectivoReal);
-
-      document.getElementById('barEntregas').textContent = fmt(datos.entregaPrestamos);
-      document.getElementById('barCobrado').textContent = fmt(datos.pagosAplicado + datos.pagosTransferencia);
-      document.getElementById('barEfectivo').textContent = fmt(efectivoReal);
+    /* Verificación estricta de seguridad */
+    if (sessionStorage.getItem("usuarioAutenticado") !== "true") {
+      window.location.href = "login.html";
     }
 
-    function modificarValor(propiedad, nombreCampo) {
-      const valorActual = datos[propiedad];
-      const nuevoValor = prompt(`Ingresa el monto para "${nombreCampo}":`, valorActual);
-      
-      if (nuevoValor !== null && !isNaN(nuevoValor) && nuevoValor.trim() !== "") {
-        datos[propiedad] = parseFloat(nuevoValor);
-        calcularYRenderizar();
+    const defaultLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238D3B43' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>";
+
+    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"Mi empresaA","phone":"","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"route":null,"closures":[]}');
+    if (!D.company.name) D.company.name = "Mi empresaA";
+    if (!D.workers) D.workers = [];
+
+    const $ = id => document.getElementById(id),
+          money = x => 'RD$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
+          save = () => localStorage.setItem('loanapp', JSON.stringify(D)),
+          today = () => new Date().toISOString().slice(0, 10),
+          client = id => D.clients.find(x => x.id == id);
+
+    function cerrarModal() { $('modal').classList.add('hidden'); }
+
+    /* Control Canvas Firma Digital */
+    let tieneFirma = false;
+    const canvas = $('canvasFirma');
+    const ctx = canvas.getContext('2d');
+    let dibujando = false;
+
+    canvas.addEventListener('mousedown', () => { dibujando = true; tieneFirma = true; });
+    canvas.addEventListener('mouseup', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('mousemove', (e) => {
+      if (!dibujando) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#000';
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener('touchstart', (e) => { dibujando = true; tieneFirma = true; e.preventDefault(); });
+    canvas.addEventListener('touchend', () => { dibujando = false; ctx.beginPath(); });
+    canvas.addEventListener('touchmove', (e) => {
+      if (!dibujando) return;
+      const touch = e.touches[0]; const rect = canvas.getBoundingClientRect();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#000';
+      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      ctx.stroke(); ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+
+    function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); tieneFirma = false; }
+
+    /* Cambio de Pantalla Navegación */
+    function show(id) {
+      document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
+      document.querySelectorAll('nav button').forEach(x => x.classList.remove('active-tab'));
+      $(id).classList.remove('hidden');
+      $(`tab-${id}`).classList.add('active-tab');
+      render();
+    }
+
+    async function saveCompany() {
+      let logoInput = $('logoInput');
+      let logoBase64 = D.company.logo;
+
+      if (logoInput.files && logoInput.files[0]) {
+        logoBase64 = await new Promise((resolve) => {
+          let r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.readAsDataURL(logoInput.files[0]);
+        });
       }
+
+      D.company = { 
+        name: cn.value || "Mi empresaA", 
+        phone: ct.value, 
+        address: cd.value, 
+        slogan: cs.value || 'Control de préstamos',
+        logo: logoBase64
+      };
+      save(); render(); alert('Configuración guardada correctamente');
     }
 
-    /* Registro de Gastos Dinámico */
-    function agregarGasto() {
-      const concepto = document.getElementById('gastoConcepto').value.trim();
-      const monto = parseFloat(document.getElementById('gastoMonto').value);
+    function saveWorker() {
+      let id = +editWorkerId.value;
+      let w = { id: id || Date.now(), name: wn.value, ci: wci.value, tel: wtel.value, role: wrole.value };
+      if (!w.name) return alert('Escribe el nombre del trabajador');
+      
+      id ? D.workers = D.workers.map(x => x.id == id ? w : x) : D.workers.push(w);
+      save(); clearWorker(); render();
+    }
 
-      if (concepto !== "" && !isNaN(monto) && monto > 0) {
-        listaGastos.push({ concepto, monto });
-        
-        datos.gastosAplicado = listaGastos.reduce((acc, g) => acc + g.monto, 0);
+    function clearWorker() {
+      editWorkerId.value = wn.value = wci.value = wtel.value = '';
+      wrole.value = 'Cobrador';
+    }
 
-        document.getElementById('gastoConcepto').value = "";
-        document.getElementById('gastoMonto').value = "";
+    function editWorker(id) {
+      let w = D.workers.find(x => x.id == id);
+      editWorkerId.value = w.id; wn.value = w.name; wci.value = w.ci; wtel.value = w.tel; wrole.value = w.role;
+      show('workers');
+    }
 
-        renderizarGastos();
-        calcularYRenderizar();
-      } else {
-        alert("Por favor ingresa un concepto y un monto válido.");
+    function delWorker(id) {
+      if (confirm('¿Eliminar trabajador?')) { D.workers = D.workers.filter(x => x.id != id); save(); render(); }
+    }
+
+    async function saveClient() {
+      let id = +edit.value;
+      let fotoInput = $('fotoCedula');
+      let fotoBase64 = null;
+
+      if (fotoInput.files && fotoInput.files[0]) {
+        fotoBase64 = await new Promise((resolve) => {
+          let r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.readAsDataURL(fotoInput.files[0]);
+        });
       }
+
+      let clienteExistente = client(id);
+      let o = {
+        id: id || Date.now(),
+        name: n.value, ci: ci.value, tel: tel.value, addr: addr.value, route: cr.value,
+        foto: fotoBase64 || (clienteExistente ? clienteExistente.foto : null)
+      };
+
+      if (!o.name) return alert('Escribe el nombre del cliente');
+      id ? D.clients = D.clients.map(x => x.id == id ? o : x) : D.clients.push(o);
+      save(); clearClient(); render();
     }
 
-    function renderizarGastos() {
-      const tbody = document.getElementById('listaGastosTabla');
-      tbody.innerHTML = "";
+    function clearClient() {
+      edit.value = n.value = ci.value = tel.value = addr.value = cr.value = '';
+      $('fotoCedula').value = '';
+    }
 
-      listaGastos.forEach(g => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${g.concepto}</td><td style="text-align: right; color: #8D3B43; font-weight: bold;">$${g.monto.toLocaleString('en-US')}</td>`;
-        tbody.appendChild(tr);
+    function editClient(id) {
+      let x = client(id);
+      edit.value = x.id; n.value = x.name; ci.value = x.ci; tel.value = x.tel; addr.value = x.addr; cr.value = x.route;
+      show('clients');
+    }
+
+    function delClient(id) {
+      if (D.loans.some(x => x.clientId == id && x.active)) return alert('No puedes eliminarlo: tiene un préstamo activo');
+      if (confirm('¿Eliminar cliente?')) { D.clients = D.clients.filter(x => x.id != id); save(); render(); }
+    }
+
+    function saveLoan() {
+      let m = +lm.value, i = +li.value, tq = +ltq.value, id = +lc.value, fecha = ldate.value || today(), fechaFin = lenddate.value || 'N/A', prev = +lprev.value || 0;
+      if (!id || m <= 0 || tq <= 0) return alert('Completa cliente, monto y total de cuotas');
+      
+      let total = m + (m * i / 100);
+      let quotaVal = Math.round(total / tq);
+      let paidBefore = prev * quotaVal;
+      let balance = Math.max(0, total - paidBefore);
+
+      D.loans.push({
+        id: Math.floor(100000 + Math.random() * 900000),
+        clientId: id, amount: m, total, balance, quota: quotaVal, totalQuotas: tq, paidQuotas: prev,
+        freq: lf.value, date: fecha, endDate: fechaFin, active: balance > 0
       });
+      save(); render(); alert('Préstamo registrado');
+      lm.value = li.value = ltq.value = lprev.value = lenddate.value = '';
     }
 
-    /* Navegación entre Vistas */
-    function cambiarVista(nombreVista) {
-      document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
-      const vistaSeleccionada = document.getElementById(`vista-${nombreVista}`);
-      if (vistaSeleccionada) {
-        vistaSeleccionada.classList.add('activa');
-      }
+    function openRoute() {
+      if (!rn.value || !rc.value) return alert('Completa la ruta y selecciona un cobrador');
+      D.route = { id: Date.now(), name: rn.value, collector: rc.value, date: rd.value || today(), company: D.company.name };
+      save(); render(); alert('Ruta abierta');
+    }
+
+    function closeRoute() {
+      if (!D.route) return alert('No hay ruta abierta');
+      let total = D.payments.filter(x => x.routeId == D.route.id).reduce((a, x) => a + (x.total || x.amount), 0);
+      D.closures.push({ ...D.route, closed: new Date().toLocaleString(), total });
+      D.route = null; save(); render(); alert('Ruta cerrada. Total: ' + money(total));
+    }
+
+    function payLoan() {
+      let l = D.loans.find(x => x.id == +pl.value), m = +pm.value, mora = +pMora.value || 0;
+      if (!l || m <= 0) return alert('Selecciona el préstamo y el monto');
+
+      let cuotasCobradas = Math.max(1, Math.round(m / l.quota));
+      let cuotasDetalle = [];
       
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar.classList.contains('open')) {
-        toggleSidebar();
+      for (let i = 1; i <= cuotasCobradas; i++) {
+        cuotasDetalle.push(l.paidQuotas + i);
       }
-    }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
-    }
+      l.paidQuotas += cuotasCobradas;
+      l.balance = Math.max(0, l.balance - m);
+      if (l.balance <= 0) l.active = false;
 
-    function sincronizarDatos() {
-      alert("Sincronizando datos de mi-empresaA...");
-    }
+      let p = {
+        id: Date.now(),
+        ticket: Math.floor(1000000000000000 + Math.random() * 9000000000000000),
+        loanId: l.id, amount: m, mora, total: m + mora,
+        date: new Date().toLocaleDateString('es-DO') + ' - ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        routeId: D.route?.id || null, note: pn.value, firma: tieneFirma ? canvas.toDataURL() : null,
+        numCuota: `${l.paidQuotas}/${l.totalQuotas}`,
+        cuotasLista: cuotasDetalle,
+        montoPorCuota: l.quota
+      };
 
-    /* Lógica de la Calculadora Flotante */
-    function toggleCalculadora() {
-      const calc = document.getElementById('calculadora');
-      calc.style.display = (calc.style.display === 'block') ? 'none' : 'block';
-    }
+      D.payments.push(p);
+      save(); pm.value = pn.value = pMora.value = '';
+      limpiarFirma(); render();
 
-    let calcExpression = '';
-    function calcInput(val) {
-      const display = document.getElementById('calcDisplay');
-      if (display.value === '0' && !isNaN(val)) {
-        calcExpression = val;
+      let c = client(l.clientId);
+      let cobradorActual = D.workers.find(w => w.name === D.route?.collector) || {};
+      let logoUsar = D.company.logo || defaultLogo;
+
+      let desgloseHTML = "";
+      if (p.cuotasLista.length > 1) {
+        desgloseHTML = `<div style="margin: 6px 0; color: #222222; font-size: 13px;"><b>Cuotas Pagadas Juntas:</b><br>`;
+        p.cuotasLista.forEach(num => {
+          desgloseHTML += `• Cuota #${num}: <b>${money(p.montoPorCuota)}</b><br>`;
+        });
+        desgloseHTML += `</div>`;
       } else {
-        calcExpression += val;
+        desgloseHTML = `<div style="color: #222222; font-size: 14px; margin: 4px 0;">Cuota Pagada ...<b>#${p.cuotasLista[0]}</b>: <b>${money(p.amount)}</b></div>`;
       }
-      display.value = calcExpression;
+
+      $('receiptContent').innerHTML = `
+        <div style="width: 100%; font-family: 'Courier New', monospace; font-size: 13px; text-align: left; color: #111111; line-height: 1.4;">
+          
+          <div style="text-align: center; margin-top: 5px;">
+            <img src="${logoUsar}" style="width:50px; height:50px; border-radius:50%; margin-bottom:4px;"><br>
+            <div style="font-size: 18px; font-weight: 900; color: #000000;">RECIBO DE PAGO</div>
+            <div style="font-size: 12px; color: #333333;">${p.date}</div>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="text-align: center; color: #222222;">
+            <strong style="font-size: 20px; text-transform: uppercase; display: block; font-weight: 900; color: #000000; margin-bottom: 2px;">${D.company.name || 'Mi empresaA'}</strong>
+            Zona: <b>${c?.route || D.route?.name || 'G. Mella'}</b><br>
+            Cobrado por: <b>${D.route?.collector || 'Emmanuel'}</b><br>
+            Tel: <b>${cobradorActual.tel || D.company.phone || '(829) 462-0598 / (849) 286-3988'}</b>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="font-size: 13px; color: #222222;">
+            <div style="margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 4px;">
+              <span style="font-size: 11px; font-weight: bold; color: #444; display: block;">CLIENTE:</span>
+              <span style="font-size: 18px; font-weight: 900; text-transform: uppercase; color: #000000; display: block;">${c?.name || ''}</span>
+            </div>
+            <div><b>Ticket . :</b> ${p.ticket}</div>
+            <div><b>Préstamo No. :</b> P${l.id}</div>
+            <div><b>Monto Prestado:</b> ${money(l.amount)}</div>
+            <div><b>Inicio:</b> ${l.date || 'N/A'} | <b>Fin:</b> ${l.endDate || 'N/A'}</div>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          ${desgloseHTML}
+          ${mora > 0 ? `<div style="color: #222222;">Mora: <b>${money(mora)}</b></div>` : ''}
+
+          <div style="display: flex; justify-content: space-between; font-weight: 900; margin-top: 6px; font-size: 14px; color: #000000; border-top: 1px solid #000; padding-top: 4px;">
+            <span>TOTAL MONTO PAGADO:</span>
+            <span>${money(p.total)}</span>
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="font-size: 15px; font-weight: 900; color: #000000; margin: 6px 0;">
+            BALANCE RESTANTE: ${money(l.balance)}
+          </div>
+
+          <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
+
+          <div style="text-align: center; font-size: 11px; margin-top: 8px; color: #111111;">
+            <b style="font-size: 12px; color: #000000;">⚠️ SIN RECIBO, NO HAY RECLAMOS!</b><br>
+            <span>Conserve este comprobante de pago.</span>
+          </div>
+
+          ${p.firma ? `<div style="margin-top:12px; text-align:center;"><img src="${p.firma}" style="width:120px; height:45px; border-bottom:1px solid #000;"><br><span style="font-size:10px; font-weight: bold; color: #000;">Firma del Cliente</span></div>` : ''}
+        </div>
+      `;
+      $('modal').classList.remove('hidden');
     }
 
-    function calcClear() {
-      calcExpression = '';
-      document.getElementById('calcDisplay').value = '0';
+    function enviarWhatsApp() {
+      let p = D.payments[D.payments.length - 1]; 
+      if (!p) return alert("No hay pago reciente.");
+      let l = D.loans.find(x => x.id == p.loanId);
+      let c = client(l?.clientId);
+      if (!c || !c.tel) return alert("El cliente no tiene teléfono.");
+
+      let telefono = c.tel.replace(/\D/g, ''); 
+      
+      let cuotasTexto = p.cuotasLista.length > 1 
+        ? `*Cuotas Pagadas (${p.cuotasLista.length} Juntas):* #${p.cuotasLista.join(', #')}` 
+        : `*Cuota Pagada:* #${p.cuotasLista[0]}`;
+
+      let mensaje = `*${D.company.name || 'Mi empresaA'}*%0A` +
+        `*RECIBO DE PAGO*%0A` +
+        `Fecha: ${p.date}%0A` +
+        `--------------------------------%0A` +
+        `*CLIENTE:* ${c.name}%0A` +
+        `*Ticket . :* ${p.ticket}%0A` +
+        `*Préstamo No.:* P${l.id}%0A` +
+        `*Monto Prestado:* ${money(l.amount)}%0A` +
+        `${cuotasTexto}%0A` +
+        `*TOTAL MONTO PAGADO:* ${money(p.total)}%0A` +
+        `*BALANCE RESTANTE:* ${money(l.balance)}%0A` +
+        `--------------------------------%0A` +
+        `_⚠️ SIN RECIBO, NO HAY RECLAMOS!_`;
+
+      window.open(`https://api.whatsapp.com/send?phone=${telefono}&text=${mensaje}`, '_blank');
     }
 
-    function calcEqual() {
-      try {
-        const res = eval(calcExpression);
-        document.getElementById('calcDisplay').value = res;
-        calcExpression = res.toString();
-      } catch (e) {
-        document.getElementById('calcDisplay').value = 'Error';
-        calcExpression = '';
+    function imprimirSeccion(id) {
+      let contenido = $(id).innerHTML;
+      let win = window.open('', '', 'width=700,height=600');
+      win.document.write(`<html><head><title>Imprimir</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;} button,.secondary,.danger,.no-print{display:none!important;}</style></head><body>${contenido}</body></html>`);
+      win.document.close(); win.focus();
+      setTimeout(() => { win.print(); win.close(); }, 300);
+    }
+
+    function backup() {
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' }));
+      a.download = 'respaldo_prestamos_' + today() + '.json';
+      a.click();
+    }
+
+    function restoreData(e) {
+      let f = e.target.files[0], r = new FileReader();
+      r.onload = () => { try { D = JSON.parse(r.result); save(); render(); alert('Respaldo restaurado correctamente'); } catch { alert('Archivo inválido'); } };
+      f && r.readAsText(f);
+    }
+
+    function render() {
+      brand.textContent = D.company.name || "Mi empresaA";
+      tag.textContent = D.company.slogan || "Control de préstamos";
+      $('appLogo').src = D.company.logo || defaultLogo;
+
+      cn.value = D.company.name; ct.value = D.company.phone; cd.value = D.company.address; cs.value = D.company.slogan;
+
+      workersList.innerHTML = D.workers.map(x => `
+        <tr>
+          <td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.role}</td>
+          <td><button class="btn-small" onclick="editWorker(${x.id})">Editar</button> <button class="danger btn-small" onclick="delWorker(${x.id})">Eliminar</button></td>
+        </tr>
+      `).join('');
+
+      rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name} (${x.role})</option>`).join('');
+
+      clientsList.innerHTML = D.clients.map(x => `
+        <tr>
+          <td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.foto ? '✅' : '❌'}</td>
+          <td><button class="btn-small" onclick="editClient(${x.id})">Editar</button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td>
+        </tr>
+      `).join('');
+
+      lc.innerHTML = '<option value="">Seleccione cliente</option>' + D.clients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+      loansList.innerHTML = D.loans.map(x => `
+        <tr>
+          <td>${client(x.clientId)?.name || ''}</td><td>${x.date || '-'}</td><td>${money(x.amount)}</td><td>${money(x.total)}</td>
+          <td>${x.paidQuotas}/${x.totalQuotas}</td><td>${money(x.balance)}</td><td>${x.active ? 'Activo' : 'Pagado'}</td>
+        </tr>
+      `).join('');
+
+      pl.innerHTML = '<option value="">Seleccione préstamo</option>' + D.loans.filter(x => x.active).map(x => `<option value="${x.id}">${client(x.clientId)?.name || ''} — Balance: ${money(x.balance)}</option>`).join('');
+
+      sc.textContent = D.clients.length;
+      sl.textContent = D.loans.filter(x => x.active).length;
+      sm.textContent = money(D.payments.reduce((a, x) => a + (x.total || x.amount), 0));
+      ss.textContent = money(D.loans.reduce((a, x) => a + x.balance, 0));
+
+      if (!rd.value) rd.value = today();
+      if (!ldate.value) ldate.value = today();
+
+      if (D.route) {
+        routeInfo.innerHTML = `<div class="card" style="padding:10px;"><b>Empresa:</b> ${D.route.company} | <b>Ruta:</b> ${D.route.name} | <b>Cobrador:</b> ${D.route.collector}</div>`;
+        routeList.innerHTML = D.loans.filter(x => x.active).map(x => `
+          <tr>
+            <td>${client(x.clientId)?.name || ''}</td>
+            <td>${x.paidQuotas}/${x.totalQuotas}</td>
+            <td>${money(x.quota)}</td>
+            <td>${money(x.balance)}</td>
+            <td class="warn">Pendiente</td>
+          </tr>
+        `).join('');
+      } else {
+        routeInfo.innerHTML = '<p style="font-size:13px; color:#666;">No hay ruta abierta actualmente.</p>';
+        routeList.innerHTML = '';
       }
+
+      if (D.route) {
+        let ps = D.payments.filter(x => x.routeId == D.route.id), t = ps.reduce((a, x) => a + (x.total || x.amount), 0);
+        cashBox.innerHTML = `<h3>${D.route.name} — ${D.route.collector}</h3><h2 style="color:#8D3B43; margin-top:5px;">${money(t)}</h2>`;
+      } else {
+        cashBox.innerHTML = '<p style="font-size:13px; color:#666;">No hay ruta abierta.</p>';
+      }
+
+      reportBox.innerHTML = `
+        <div class="grid">
+          <div class="stats">Prestado<br>${money(D.loans.reduce((a, x) => a + x.amount, 0))}</div>
+          <div class="stats">Cobrado<br>${money(D.payments.reduce((a, x) => a + (x.total || x.amount), 0))}</div>
+          <div class="stats">Pendiente<br>${money(D.loans.reduce((a, x) => a + x.balance, 0))}</div>
+        </div>
+      `;
     }
 
-    document.addEventListener("DOMContentLoaded", calcularYRenderizar);
+    render();
   </script>
 </body>
 </html>
