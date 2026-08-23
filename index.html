@@ -84,6 +84,22 @@
     .cuadre-table tr:hover { background-color: rgba(46, 125, 50, 0.05); }
     .cuadre-footer { font-size: 16px; font-weight: bold; padding: 15px; border-top: 2px solid #2e7d32; margin-top: 10px; background: var(--stats-bg); border-radius: 0 0 6px 6px; }
 
+    /* Tarjetas de Lista de Préstamos */
+    .loan-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+    .metric-card { padding: 15px; border-radius: 6px; color: #fff; font-weight: bold; font-size: 15px; }
+    .metric-capital { background-color: #00a2ff; }
+    .metric-atrasos { background-color: #ffc107; color: #000; }
+    .metric-balance { background-color: #17a2b8; }
+    .metric-vencidos { background-color: #dc3545; }
+
+    .loan-item-card { border-bottom: 1px solid var(--border-color); padding: 15px 0; position: relative; }
+    .loan-item-title { font-size: 18px; font-weight: bold; color: var(--text-main); margin-bottom: 4px; }
+    .loan-item-sub { font-size: 13px; color: #666; margin-bottom: 8px; }
+    body.dark-mode .loan-item-sub { color: #aaa; }
+    .loan-item-detail { font-size: 14px; line-height: 1.5; color: var(--text-main); }
+    .badge-al-dia { background-color: #28a745; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; float: right; }
+    .badge-atrasado { background-color: #dc3545; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; float: right; }
+
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 999; }
     .modal > div { background: var(--card-bg); color: var(--text-main); padding: 20px; border-radius: 8px; max-width: 380px; width: 100%; max-height: 90vh; overflow-y: auto; }
     canvas { border: 1px dashed #aaa; border-radius: 4px; background: #fff; touch-action: none; cursor: crosshair; }
@@ -246,11 +262,16 @@
         </div>
       </section>
 
-      <!-- 5. PRÉSTAMOS (CON VALORES DEFAULT) -->
+      <!-- 5. PRÉSTAMOS -->
       <section id="loans" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Crear / Registrar Préstamo</h2>
         <div class="grid">
-          <select id="lc"></select>
+          <!-- BUSCADOR Y SELECTOR DE CLIENTE CON DATALIST -->
+          <div>
+            <input id="lcSearch" list="clientsDatalist" placeholder="Seleccione cliente (Busque por nombre o cédula)..." oninput="syncSelectedClient()">
+            <datalist id="clientsDatalist"></datalist>
+            <input type="hidden" id="lc">
+          </div>
           <input id="lm" type="number" placeholder="Monto Prestado (RD$)">
           <input id="li" type="number" placeholder="Interés %" value="30">
           <input id="ltq" type="number" placeholder="Total de cuotas" value="13">
@@ -274,11 +295,20 @@
           </div>
           <button onclick="saveLoan()" style="grid-column:1/-1;">Guardar Préstamo</button>
         </div>
-        <div class="wrap">
-          <table>
-            <thead><tr><th>Cliente</th><th>Inicio</th><th>Monto</th><th>Total</th><th>Cuotas</th><th>Saldo</th><th>Estado</th></tr></thead>
-            <tbody id="loansList"></tbody>
-          </table>
+
+        <!-- LISTA DE PRÉSTAMOS ESTILO WPRESTAMOS -->
+        <div style="margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 15px;">
+          <h2 id="loansCountTitle" style="font-size:22px; font-weight: bold; margin-bottom:15px; color: var(--text-main);">Lista de Prestamos (0)</h2>
+          <input id="searchLoans" type="text" placeholder="Escriba para buscar Prestamo..." oninput="renderLoansList()" style="margin-bottom: 15px;">
+
+          <div class="loan-metric-grid">
+            <div class="metric-card metric-capital">Capital <span id="mCapital">$0</span></div>
+            <div class="metric-card metric-atrasos">Atrasos <span id="mAtrasos">$0</span></div>
+            <div class="metric-card metric-balance">Balance <span id="mBalance">$0</span></div>
+            <div class="metric-card metric-vencidos">Vencidos <span id="mVencidos">$0</span></div>
+          </div>
+
+          <div id="loansCardsContainer"></div>
         </div>
       </section>
 
@@ -302,7 +332,7 @@
         </div>
       </section>
 
-      <!-- 7. COBROS (CON TIPO DE PAGO: EFECTIVO/TRANSFERENCIA) -->
+      <!-- 7. COBROS -->
       <section id="pay" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Registrar Cobro</h2>
         <div class="grid">
@@ -458,6 +488,7 @@
 
     const $ = id => document.getElementById(id),
           money = x => 'RD$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
+          moneySimple = x => '$' + Number(x || 0).toLocaleString('en-US', {minimumFractionDigits: 0}),
           save = () => localStorage.setItem('loanapp', JSON.stringify(D)),
           today = () => new Date().toISOString().slice(0, 10),
           client = id => D.clients.find(x => x.id == id);
@@ -506,6 +537,18 @@
     const ctxCli = canvasCli.getContext('2d');
     initCanvasEvents(canvasCli, ctxCli, v => tieneFirmaCliente = v);
     function limpiarFirmaCliente() { ctxCli.clearRect(0, 0, canvasCli.width, canvasCli.height); ctxCli.beginPath(); tieneFirmaCliente = false; }
+
+    function syncSelectedClient() {
+      let val = $('lcSearch').value;
+      let datalist = $('clientsDatalist');
+      let selectedOption = Array.from(datalist.options).find(opt => opt.value === val);
+      
+      if (selectedOption) {
+        $('lc').value = selectedOption.getAttribute('data-id');
+      } else {
+        $('lc').value = '';
+      }
+    }
 
     function toggleOldClientFields() {
       if ($('isOldClient').checked) $('oldClientFields').classList.remove('hidden');
@@ -609,6 +652,7 @@
       D.loans.push({ id: Math.floor(100000 + Math.random() * 900000), clientId: id, amount: m, total, balance, quota: quotaVal, totalQuotas: tq, paidQuotas: prev, freq: lf.value, date: fecha, endDate: fechaFin, active: balance > 0 });
       save(); render(); alert('Préstamo registrado'); 
       lm.value = ''; li.value = '30'; ltq.value = '13'; lprev.value = '0'; lenddate.value = '';
+      $('lcSearch').value = ''; $('lc').value = '';
     }
 
     function openRoute() {
@@ -666,10 +710,9 @@
       $('modal').classList.remove('hidden');
     }
 
-    /* FORMATO DEL RECIBO MEJORADO Y DETALLADO */
+    /* FORMATO DEL RECIBO MODIFICADO SEGÚN LA SOLICITUD */
     function mostrarReciboModal(p) {
       let l = D.loans.find(x => x.id == p.loanId), c = client(l?.clientId);
-      let cobradorActual = D.workers.find(w => w.name === D.route?.collector) || {};
       let logoUsar = D.company.logo || defaultLogo;
 
       let desgloseHTML = "";
@@ -731,9 +774,9 @@
 
           <div style="border-top: 1px dashed #000; margin: 8px 0;"></div>
 
-          <div style="text-align: center; font-size: 11px; margin-top: 8px; color: #111111;">
-            <b style="font-size: 12px; color: #000000;">⚠️ SIN RECIBO, NO HAY RECLAMOS!</b><br>
-            <span>Conserve este comprobante como soporte legal.</span>
+          <div style="text-align: center; font-size: 12px; margin-top: 8px; color: #111111; line-height: 1.3;">
+            <b style="font-size: 13px; color: #000000; display:block; margin-bottom:4px;">SIN RECIBO, NO HAY RECLAMOS!</b>
+            <span>En caso de incumplimiento, sus crédito/datos serán procesados a data</span>
           </div>
 
           ${p.firma ? `<div style="margin-top:10px; text-align:center;"><img src="${p.firma}" style="width:120px; height:45px; border-bottom:1px solid #000;"><br><span style="font-size:10px; font-weight: bold; color: #000;">Firma Cliente</span></div>` : ''}
@@ -745,7 +788,7 @@
       let p = D.payments[D.payments.length - 1]; if (!p) return alert("No hay pagos recientes");
       let l = D.loans.find(x => x.id == p.loanId), c = client(l?.clientId);
       if (!c?.tel) return alert('El cliente no posee teléfono');
-      let mensaje = `*${D.company.name}*%0A*RECIBO:* ${p.ticket}%0A*CLIENTE:* ${c.name}%0A*PAGO (${p.type || 'Efectivo'}):* ${money(p.total)}%0A*BALANCE RESTANTE:* ${money(l.balance)}%0A_⚠️ SIN RECIBO NO HAY RECLAMOS_`;
+      let mensaje = `*${D.company.name}*%0A*RECIBO:* ${p.ticket}%0A*CLIENTE:* ${c.name}%0A*PAGO (${p.type || 'Efectivo'}):* ${money(p.total)}%0A*BALANCE RESTANTE:* ${money(l.balance)}%0A_SIN RECIBO, NO HAY RECLAMOS! En caso de incumplimiento, sus crédito/datos serán procesados a data_`;
       window.open(`https://api.whatsapp.com/send?phone=${c.tel.replace(/\D/g, '')}&text=${mensaje}`, '_blank');
     }
 
@@ -761,6 +804,66 @@
           <td><button class="btn-small" onclick="editClient(${x.id})">Ver / Editar</button></td>
         </tr>
       `).join('') || '<tr><td colspan="5">No se encontraron clientes</td></tr>';
+    }
+
+    /* RENDERIZADO DE LA LISTA DE PRÉSTAMOS (ESTILO WPRESTAMOS) */
+    function renderLoansList() {
+      let activeLoans = D.loans.filter(x => x.active);
+      let q = ($('searchLoans')?.value || '').toLowerCase().trim();
+      
+      let filtered = activeLoans.filter(l => {
+        let c = client(l.clientId);
+        return c?.name.toLowerCase().includes(q);
+      });
+
+      $('loansCountTitle').textContent = `Lista de Prestamos (${filtered.length})`;
+
+      let totalCapital = activeLoans.reduce((a, x) => a + x.amount, 0);
+      let totalBalance = activeLoans.reduce((a, x) => a + x.balance, 0);
+      
+      let hoy = new Date();
+      let atrasosTotal = 0;
+      let vencidosTotal = 0;
+
+      activeLoans.forEach(l => {
+        if (l.endDate && l.endDate !== 'N/A' && new Date(l.endDate) < hoy) {
+          atrasosTotal += l.quota;
+          vencidosTotal += l.balance;
+        }
+      });
+
+      $('mCapital').textContent = moneySimple(totalCapital);
+      $('mAtrasos').textContent = moneySimple(atrasosTotal);
+      $('mBalance').textContent = moneySimple(totalBalance);
+      $('mVencidos').textContent = moneySimple(vencidosTotal);
+
+      let container = $('loansCardsContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding:15px; color:#666;">No hay préstamos activos registrados</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(l => {
+        let c = client(l.clientId);
+        let lastPay = D.payments.filter(p => p.loanId == l.id).pop();
+        let lastPayText = lastPay ? lastPay.date : 'Ninguno Aun';
+        let esAtrasado = l.endDate && l.endDate !== 'N/A' && new Date(l.endDate) < hoy;
+        
+        let fechaEntregado = l.date ? new Date(l.date).toLocaleDateString('es-DO', {day: '2-digit', month: 'short', year: 'numeric'}).replace('.', '') : 'N/A';
+
+        return `
+          <div class="loan-item-card">
+            <span class="${esAtrasado ? 'badge-atrasado' : 'badge-al-dia'}">${esAtrasado ? 'Atrasado' : 'Al Dia'}</span>
+            <div class="loan-item-title">${c?.name || 'Cliente no encontrado'}</div>
+            <div class="loan-item-sub">Balance ${moneySimple(l.balance)}<br>Ultimo Pago: ${lastPayText}</div>
+            <div class="loan-item-detail">
+              Entregado en: ${fechaEntregado}<br>
+              Monto Prestado: ${moneySimple(l.amount)}<br>
+              Cuotas Pagas: ${moneySimple(l.quota)} | ${l.paidQuotas} / ${l.totalQuotas}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function imprimirSeccion(id) {
@@ -790,9 +893,11 @@
       rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name}</option>`).join('');
 
       clientsList.innerHTML = D.clients.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.firma ? `<button class="btn-small secondary" onclick="verFirmaClienteModal(${x.id})">Ver Firma</button>` : '❌'}</td><td>${x.foto ? '✅' : '❌'}</td><td><button class="btn-small" onclick="editClient(${x.id})">Editar </button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');
-      lc.innerHTML = '<option value="">Seleccione cliente</option>' + D.clients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+      
+      $('clientsDatalist').innerHTML = D.clients.map(x => `<option data-id="${x.id}" value="${x.name} - Cédula: ${x.ci || 'N/A'}"></option>`).join('');
 
-      loansList.innerHTML = D.loans.map(x => `<tr><td>${client(x.clientId)?.name || ''}</td><td>${x.date || '-'}</td><td>${money(x.amount)}</td><td>${money(x.total)}</td><td>${x.paidQuotas}/${x.totalQuotas}</td><td>${money(x.balance)}</td><td>${x.active ? 'Activo' : 'Pagado'}</td></tr>`).join('');
+      renderLoansList();
+
       pl.innerHTML = '<option value="">Seleccione préstamo</option>' + D.loans.filter(x => x.active).map(x => `<option value="${x.id}">${client(x.clientId)?.name || ''} — Balance: ${money(x.balance)}</option>`).join('');
 
       historyList.innerHTML = D.payments.map(x => {
