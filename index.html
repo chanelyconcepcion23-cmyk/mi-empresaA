@@ -7,12 +7,39 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="apple-touch-icon" href="logo.svg">
-  <meta name="theme-color" content="#8D3B43">
+  <meta name="theme-color" content="#2e7d32">
   <meta name="apple-mobile-web-app-title" content="Mi empresaA">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
+    /* Variables de Tema Claro/Oscuro */
+    :root {
+      --bg-body: #f4f4f6;
+      --text-main: #222222;
+      --card-bg: #ffffff;
+      --sidebar-bg: #2e7d32;
+      --sidebar-text: #ffffff;
+      --border-color: #eeeeee;
+      --input-bg: #ffffff;
+      --input-border: #ccc;
+      --stats-bg: #fafafa;
+      --table-stripe: #f9f9f9;
+    }
+
+    body.dark-mode {
+      --bg-body: #121212;
+      --text-main: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --sidebar-bg: #1b5e20;
+      --sidebar-text: #ffffff;
+      --border-color: #333333;
+      --input-bg: #2d2d2d;
+      --input-border: #444;
+      --stats-bg: #2a2a2a;
+      --table-stripe: #252525;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: #f4f4f6; color: #222; display: flex; flex-direction: column; min-height: 100vh; }
+    body { background: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s, color 0.3s; }
     
     /* Layout Vertical (Sidebar) */
     .app-container { display: flex; flex: 1; flex-direction: column; }
@@ -22,7 +49,7 @@
     }
 
     /* Menú Vertical / Sidebar */
-    aside { background: #8D3B43; color: #fff; width: 100%; max-width: 100%; padding: 15px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
+    aside { background: var(--sidebar-bg); color: var(--sidebar-text); width: 100%; max-width: 100%; padding: 15px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; }
     @media(min-width: 768px) {
       aside { width: 250px; min-height: 100vh; position: sticky; top: 0; }
     }
@@ -34,41 +61,53 @@
 
     /* Lista Vertical de Botones */
     nav { display: flex; flex-direction: column; gap: 6px; }
-    nav button { background: rgba(255, 255, 255, 0.1); color: #fff; border: 0; padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 6px; text-align: left; cursor: pointer; transition: 0.2s; }
-    nav button:hover { background: rgba(255, 255, 255, 0.25); }
-    nav button.active-tab { background: #ffffff; color: #8D3B43; font-weight: bold; }
+    nav button { background: rgba(255, 255, 255, 0.15); color: #fff; border: 0; padding: 10px 14px; font-size: 13px; font-weight: 600; border-radius: 6px; text-align: left; cursor: pointer; transition: 0.2s; }
+    nav button:hover { background: rgba(255, 255, 255, 0.3); }
+    nav button.active-tab { background: #ffffff; color: #2e7d32; font-weight: bold; }
+
+    .theme-toggle-btn { background: rgba(0,0,0,0.2); margin-top: auto; border: 1px solid rgba(255,255,255,0.3); }
 
     /* Área Principal de Contenido */
     main { flex: 1; padding: 20px; max-width: 1100px; }
-    .card { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card { background: var(--card-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .hidden { display: none !important; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-    .stats { font-size: 16px; font-weight: bold; background: #fafafa; padding: 14px; border-radius: 8px; border-left: 4px solid #8D3B43; text-align: center; }
+    .stats { font-size: 16px; font-weight: bold; background: var(--stats-bg); padding: 14px; border-radius: 8px; border-left: 4px solid #2e7d32; text-align: center; }
     .wrap { overflow-x: auto; margin-top: 12px; }
     
     /* Formularios y Botones */
-    button, input, select { padding: 10px 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; width: 100%; }
-    button { background: #8D3B43; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
+    button, input, select { padding: 10px 12px; border-radius: 6px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-size: 13px; width: 100%; }
+    button { background: #2e7d32; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
     button:hover { opacity: 0.9; }
     .danger { background: #b42318; }
-    .secondary { background: #555555; }
+    .secondary { background: #555555; color: #fff; }
     .btn-small { width: auto; padding: 5px 10px; font-size: 11px; }
 
     /* Tablas */
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: #8D3B43; color: #fff; font-weight: 600; text-align: left; }
-    th, td { padding: 9px 12px; border-bottom: 1px solid #eee; }
+    th { background: #2e7d32; color: #fff; font-weight: 600; text-align: left; }
+    th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-color); }
+    tr:nth-child(even) { background-color: var(--table-stripe); }
     .warn { color: #b54708; font-weight: bold; }
+
+    /* Estilos Específicos para Cuadre de Cobro */
+    .cuadre-header { background: #e8f5e9; color: #1b5e20; padding: 12px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; font-size: 15px; border-left: 5px solid #2e7d32; }
+    body.dark-mode .cuadre-header { background: #1b3e20; color: #a5d6a7; border-left-color: #81c784; }
+    .cuadre-table td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+    .cuadre-table tr:hover { background-color: rgba(46, 125, 50, 0.05); }
+    .cuadre-footer { font-size: 16px; font-weight: bold; padding: 15px; border-top: 2px solid #2e7d32; margin-top: 10px; background: var(--stats-bg); border-radius: 0 0 6px 6px; }
 
     /* Modales y Canvas */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 999; }
-    .modal > div { background: #fff; padding: 20px; border-radius: 8px; max-width: 380px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .modal > div { background: var(--card-bg); color: var(--text-main); padding: 20px; border-radius: 8px; max-width: 380px; width: 100%; max-height: 90vh; overflow-y: auto; }
     canvas { border: 1px dashed #aaa; border-radius: 4px; background: #fff; touch-action: none; cursor: crosshair; }
     
+    .box-old-client { border: 1px dashed #2e7d32; padding: 12px; border-radius: 8px; margin-top: 10px; background: rgba(46, 125, 50, 0.03); grid-column: 1 / -1; }
+
     @media print {
       body > * { display: none !important; }
       #modal { position: static; background: #fff; padding: 0; display: block !important; }
-      #modal > div { padding: 0; border-radius: 0; box-shadow: none; max-width: 100%; }
+      #modal > div { padding: 0; border-radius: 0; box-shadow: none; max-width: 100%; color: #000; }
       .no-print { display: none !important; }
     }
   </style>
@@ -80,7 +119,7 @@
     <!-- BARRA NAVEGACIÓN VERTICAL (SIDEBAR) -->
     <aside>
       <div class="brand-box">
-        <img id="appLogo" class="brand-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238D3B43' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>" alt="Logo">
+        <img id="appLogo" class="brand-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232e7d32' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>" alt="Logo">
         <div class="brand-titles">
           <h1 id="brand">Mi empresaA</h1>
           <p id="tag">Sistema de Préstamos</p>
@@ -95,12 +134,15 @@
         <button id="tab-loans" onclick="show('loans')">💵 Préstamos</button>
         <button id="tab-route" onclick="show('route')">🗺️ Ruta Cobro</button>
         <button id="tab-pay" onclick="show('pay')">📝 Registrar Cobro</button>
+        <button id="tab-cuadre" onclick="show('cuadre')">📋 Cuadre de Cobro</button>
         <button id="tab-history" onclick="show('history')">📜 Historial de Pagos</button>
         <button id="tab-expenses" onclick="show('expenses')">💸 Gastos de Ruta</button>
         <button id="tab-delinquent" onclick="show('delinquent')">⚠️ Control Morosos</button>
         <button id="tab-cash" onclick="show('cash')">💰 Caja Diaria</button>
         <button id="tab-reports" onclick="show('reports')">📈 Reportes / Respaldo</button>
       </nav>
+
+      <button onclick="toggleDarkMode()" class="theme-toggle-btn">🌓 Cambiar Tema</button>
     </aside>
 
     <!-- ÁREA DE CONTENIDO -->
@@ -173,12 +215,39 @@
             <label style="font-size:11px; display:block; margin-bottom:2px;">Foto Cédula:</label>
             <input type="file" id="fotoCedula" accept="image/*">
           </div>
-          <button onclick="saveClient()">Guardar Cliente</button>
-          <button class="secondary" onclick="clearClient()">Cancelar</button>
+
+          <!-- Módulo Cliente Viejo / Deuda Anterior -->
+          <div class="box-old-client">
+            <label style="font-weight:bold; font-size:13px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="isOldClient" onchange="toggleOldClientFields()" style="width:auto;"> 👵/👴 ¿Es un Cliente Viejo (Con préstamo activo anterior)?
+            </label>
+            <div id="oldClientFields" class="hidden grid" style="margin-top:10px;">
+              <input id="oldAmount" type="number" placeholder="Monto Original Prestado (RD$)">
+              <input id="oldBalance" type="number" placeholder="Saldo Pendiente Actual (RD$)">
+              <input id="oldQuotaVal" type="number" placeholder="Valor de cada Cuota (RD$)">
+              <select id="oldFreq">
+                <option>Diaria</option>
+                <option>Semanal</option>
+                <option>Quincenal</option>
+                <option>Mensual</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Firma del Cliente -->
+          <div style="grid-column: 1 / -1; margin-top: 5px;">
+            <label style="display:block; font-weight:bold; font-size:12px; margin-bottom:5px;">✍️ Firma del Cliente:</label>
+            <canvas id="canvasFirmaCliente" width="300" height="90"></canvas><br>
+            <button type="button" class="secondary btn-small" onclick="limpiarFirmaCliente()" style="margin-top:5px; width:auto;">Limpiar Firma</button>
+          </div>
+
+          <button onclick="saveClient()" style="grid-column:1/-1;">Guardar Cliente</button>
+          <button class="secondary" onclick="clearClient()" style="grid-column:1/-1;">Cancelar</button>
         </div>
+
         <div class="wrap">
           <table>
-            <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Foto</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Ruta</th><th>Firma</th><th>Foto</th><th>Acciones</th></tr></thead>
             <tbody id="clientsList"></tbody>
           </table>
         </div>
@@ -251,7 +320,7 @@
         </div>
         
         <div style="margin-top: 15px;">
-          <label style="display:block; font-weight:bold; font-size:12px; margin-bottom:5px;">Firma del Cliente (Opcional):</label>
+          <label style="display:block; font-weight:bold; font-size:12px; margin-bottom:5px;">Firma del Pago / Cliente (Opcional):</label>
           <canvas id="canvasFirma" width="280" height="80"></canvas><br>
           <button type="button" class="secondary btn-small" onclick="limpiarFirma()" style="margin-top:5px;">Limpiar Firma</button>
         </div>
@@ -259,7 +328,56 @@
         <button onclick="payLoan()" style="margin-top:15px; width:100%; font-size:15px;">Generar Recibo</button>
       </section>
 
-      <!-- 8. HISTORIAL DE PAGOS (NUEVA OPCIÓN) -->
+      <!-- 8. CUADRE DE COBRO -->
+      <section id="cuadre" class="page card hidden">
+        <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('cuadre')">🖨️ Imprimir Cuadre</button>
+        <h2 style="font-size:16px; margin-bottom:12px;">Cuadre de Cobro</h2>
+        
+        <div class="cuadre-header">
+          (+) Caja / Banco: <span id="qCajaBanco">RD$0</span> ✏️
+        </div>
+
+        <div class="wrap">
+          <table class="cuadre-table">
+            <tbody>
+              <tr>
+                <td>Préstamos X Cobrar</td>
+                <td style="text-align:right;" id="qPrestamosXCobrar">(-) RD$0</td>
+              </tr>
+              <tr>
+                <td>Entrega de Préstamos</td>
+                <td style="text-align:right;" id="qEntregaPrestamos">(-) RD$0</td>
+              </tr>
+              <tr>
+                <td>Acta Notarial</td>
+                <td style="text-align:right;" id="qActaNotarial">(+) RD$0</td>
+              </tr>
+              <tr>
+                <td>Pagos de Mora</td>
+                <td style="text-align:right;" id="qPagosMora">(+) RD$0</td>
+              </tr>
+              <tr>
+                <td>Pagos Aplicados</td>
+                <td style="text-align:right;" id="qPagosAplicados">(+) RD$0</td>
+              </tr>
+              <tr>
+                <td>Pagos Transferencia</td>
+                <td style="text-align:right;" id="qPagosTransferencia">(+) RD$0</td>
+              </tr>
+              <tr>
+                <td style="color:#b42318; font-weight:bold;">Gastos Aplicados</td>
+                <td style="text-align:right; color:#b42318; font-weight:bold;" id="qGastosAplicados">(-) RD$0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cuadre-footer">
+          ( = ) Dinero en Efectivo: <span id="qDineroEfectivo">RD$0</span>
+        </div>
+      </section>
+
+      <!-- 9. HISTORIAL DE PAGOS -->
       <section id="history" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Historial Completo de Pagos</h2>
         <div class="wrap">
@@ -270,7 +388,7 @@
         </div>
       </section>
 
-      <!-- 9. GASTOS DE RUTA (NUEVA OPCIÓN) -->
+      <!-- 10. GASTOS DE RUTA -->
       <section id="expenses" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Gastos Operativos / Salidas de Caja</h2>
         <div class="grid">
@@ -286,7 +404,7 @@
         </div>
       </section>
 
-      <!-- 10. CONTROL DE MOROSOS (NUEVA OPCIÓN) -->
+      <!-- 11. CONTROL DE MOROSOS -->
       <section id="delinquent" class="page card hidden">
         <h2 style="font-size:16px; margin-bottom:12px;">Control de Préstamos en Atraso</h2>
         <div class="wrap">
@@ -297,14 +415,14 @@
         </div>
       </section>
 
-      <!-- 11. CAJA -->
+      <!-- 12. CAJA -->
       <section id="cash" class="page card hidden">
         <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('cash')">🖨️ Imprimir Caja</button>
         <h2 style="font-size:16px; margin-bottom:12px;">Balance de Caja Diaria</h2>
         <div id="cashBox"></div>
       </section>
 
-      <!-- 12. REPORTES Y RESPALDO -->
+      <!-- 13. REPORTES Y RESPALDO -->
       <section id="reports" class="page card hidden">
         <button class="secondary btn-small no-print" style="float:right;" onclick="imprimirSeccion('reports')">🖨️ Imprimir Reportes</button>
         <h2 style="font-size:16px; margin-bottom:12px;">Reportes Generales y Copias de Seguridad</h2>
@@ -320,7 +438,7 @@
     </main>
   </div>
 
-  <!-- Ventana Modal Recibo -->
+  <!-- Ventana Modal Recibo / Imagen -->
   <div id="modal" class="hidden modal">
     <div>
       <div id="receiptContent"></div>
@@ -337,12 +455,13 @@
       window.location.href = "login.html";
     }
 
-    const defaultLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%238D3B43' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>";
+    const defaultLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%232e7d32' stroke='%23d4af37' stroke-width='4'/><circle cx='50' cy='50' r='42' fill='none' stroke='%23d4af37' stroke-dasharray='3 2' stroke-width='2'/><text x='50' y='68' font-size='52' font-weight='900' font-family='Arial, sans-serif' fill='%23d4af37' text-anchor='middle'>P</text></svg>";
 
-    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"Mi empresaA","phone":"","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"expenses":[],"route":null,"closures":[]}');
+    let D = JSON.parse(localStorage.getItem('loanapp') || '{"company":{"name":"Mi empresaA","phone":"","address":"","slogan":"Control de préstamos","logo":""},"workers":[],"clients":[],"loans":[],"payments":[],"expenses":[],"route":null,"closures":[],"theme":"light"}');
     if (!D.company.name) D.company.name = "Mi empresaA";
     if (!D.workers) D.workers = [];
     if (!D.expenses) D.expenses = [];
+    if (!D.theme) D.theme = "light";
 
     const $ = id => document.getElementById(id),
           money = x => 'RD$' + Number(x || 0).toLocaleString('es-DO', {minimumFractionDigits: 0}),
@@ -350,25 +469,60 @@
           today = () => new Date().toISOString().slice(0, 10),
           client = id => D.clients.find(x => x.id == id);
 
+    if (D.theme === 'dark') document.body.classList.add('dark-mode');
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      D.theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+      save();
+    }
+
     function cerrarModal() { $('modal').classList.add('hidden'); }
 
-    /* Control Canvas Firma */
+    /* Canvas Firma de Cobros */
     let tieneFirma = false;
     const canvas = $('canvasFirma');
     const ctx = canvas.getContext('2d');
     let dibujando = false;
 
-    canvas.addEventListener('mousedown', () => { dibujando = true; tieneFirma = true; });
-    canvas.addEventListener('mouseup', () => { dibujando = false; ctx.beginPath(); });
-    canvas.addEventListener('mousemove', (e) => {
-      if (!dibujando) return;
-      const rect = canvas.getBoundingClientRect();
-      ctx.lineWidth = 2; ctx.strokeStyle = '#000';
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    });
+    function initCanvasEvents(c, context, setFlag) {
+      let isDrawing = false;
+      const getPos = e => {
+        const rect = c.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      };
+      const start = e => { isDrawing = true; setFlag(true); context.beginPath(); const p = getPos(e); context.moveTo(p.x, p.y); };
+      const move = e => {
+        if (!isDrawing) return;
+        const p = getPos(e);
+        context.lineWidth = 2; context.strokeStyle = '#000';
+        context.lineTo(p.x, p.y); context.stroke();
+      };
+      const stop = () => { isDrawing = false; };
 
+      c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+      c.addEventListener('touchstart', start); c.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
+    }
+
+    initCanvasEvents(canvas, ctx, v => tieneFirma = v);
     function limpiarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); tieneFirma = false; }
+
+    /* Canvas Firma de Cliente */
+    let tieneFirmaCliente = false;
+    const canvasCli = $('canvasFirmaCliente');
+    const ctxCli = canvasCli.getContext('2d');
+    initCanvasEvents(canvasCli, ctxCli, v => tieneFirmaCliente = v);
+    function limpiarFirmaCliente() { ctxCli.clearRect(0, 0, canvasCli.width, canvasCli.height); ctxCli.beginPath(); tieneFirmaCliente = false; }
+
+    function toggleOldClientFields() {
+      if ($('isOldClient').checked) {
+        $('oldClientFields').classList.remove('hidden');
+      } else {
+        $('oldClientFields').classList.add('hidden');
+      }
+    }
 
     /* Cambio de Menú Vertical */
     function show(id) {
@@ -409,14 +563,58 @@
         });
       }
       let cEx = client(id);
-      let o = { id: id || Date.now(), name: n.value, ci: ci.value, tel: tel.value, addr: addr.value, route: cr.value, foto: fotoBase64 || (cEx ? cEx.foto : null) };
+      let firmaData = tieneFirmaCliente ? canvasCli.toDataURL() : (cEx ? cEx.firma : null);
+
+      let clientId = id || Date.now();
+      let o = { id: clientId, name: n.value, ci: ci.value, tel: tel.value, addr: addr.value, route: cr.value, foto: fotoBase64 || (cEx ? cEx.foto : null), firma: firmaData };
       if (!o.name) return alert('Escribe el nombre del cliente');
+
       id ? D.clients = D.clients.map(x => x.id == id ? o : x) : D.clients.push(o);
-      save(); clearClient(); render();
+
+      /* Procesar Cliente Viejo si está marcado */
+      if (!id && $('isOldClient').checked) {
+        let mVal = +$('oldAmount').value || 0;
+        let balVal = +$('oldBalance').value || 0;
+        let qVal = +$('oldQuotaVal').value || 0;
+        if (balVal > 0) {
+          let tq = qVal > 0 ? Math.ceil(balVal / qVal) : 1;
+          D.loans.push({
+            id: Math.floor(100000 + Math.random() * 900000),
+            clientId: clientId,
+            amount: mVal || balVal,
+            total: balVal,
+            balance: balVal,
+            quota: qVal || balVal,
+            totalQuotas: tq,
+            paidQuotas: 0,
+            freq: $('oldFreq').value,
+            date: today(),
+            endDate: 'N/A',
+            active: true
+          });
+        }
+      }
+
+      save(); clearClient(); render(); alert('Cliente guardado exitosamente');
     }
 
-    function clearClient() { edit.value = n.value = ci.value = tel.value = addr.value = cr.value = ''; $('fotoCedula').value = ''; }
-    function editClient(id) { let x = client(id); edit.value = x.id; n.value = x.name; ci.value = x.ci; tel.value = x.tel; addr.value = x.addr; cr.value = x.route; show('clients'); }
+    function clearClient() {
+      edit.value = n.value = ci.value = tel.value = addr.value = cr.value = '';
+      $('fotoCedula').value = ''; $('isOldClient').checked = false;
+      $('oldAmount').value = $('oldBalance').value = $('oldQuotaVal').value = '';
+      toggleOldClientFields(); limpiarFirmaCliente();
+    }
+
+    function editClient(id) {
+      let x = client(id); edit.value = x.id; n.value = x.name; ci.value = x.ci; tel.value = x.tel; addr.value = x.addr; cr.value = x.route;
+      limpiarFirmaCliente();
+      if (x.firma) {
+        let img = new Image(); img.onload = () => ctxCli.drawImage(img, 0, 0); img.src = x.firma;
+        tieneFirmaCliente = true;
+      }
+      show('clients');
+    }
+
     function delClient(id) { if (D.loans.some(x => x.clientId == id && x.active)) return alert('No puedes eliminarlo: tiene un préstamo activo'); if (confirm('¿Eliminar cliente?')) { D.clients = D.clients.filter(x => x.id != id); save(); render(); } }
 
     function saveLoan() {
@@ -465,6 +663,17 @@
 
     function delExpense(id) { if (confirm('¿Eliminar gasto?')) { D.expenses = D.expenses.filter(x => x.id != id); save(); render(); } }
 
+    function verFirmaClienteModal(id) {
+      let c = client(id);
+      if (!c?.firma) return alert('Este cliente no posee firma guardada');
+      $('receiptContent').innerHTML = `
+        <div style="text-align:center;">
+          <h3>Firma de ${c.name}</h3><br>
+          <img src="${c.firma}" style="max-width:100%; border:1px solid #ccc; border-radius:4px; background:#fff;">
+        </div>`;
+      $('modal').classList.remove('hidden');
+    }
+
     function mostrarReciboModal(p) {
       let l = D.loans.find(x => x.id == p.loanId), c = client(l?.clientId);
       $('receiptContent').innerHTML = `
@@ -479,6 +688,7 @@
           <div>Ticket: ${p.ticket}</div>
           <div>Monto Pagado: <b>${money(p.total)}</b></div>
           <div>Balance Restante: <b>${money(l?.balance || 0)}</b></div>
+          ${p.firma ? `<div style="margin-top:10px; text-align:center;"><small>Firma Pago:</small><br><img src="${p.firma}" style="max-width:150px;"></div>` : ''}
           <hr>
           <div style="text-align:center;"><small>⚠️ SIN RECIBO NO HAY RECLAMOS</small></div>
         </div>`;
@@ -495,7 +705,7 @@
 
     function imprimirSeccion(id) {
       let win = window.open('', '', 'width=700,height=600');
-      win.document.write(`<html><head><title>Imprimir</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;} button,.secondary,.danger,.no-print{display:none!important;}</style></head><body>${$(id).innerHTML}</body></html>`);
+      win.document.write(`<html><head><title>Imprimir</title><style>body{font-family:Arial;padding:20px;color:#000;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;} button,.secondary,.danger,.no-print{display:none!important;}</style></head><body>${$(id).innerHTML}</body></html>`);
       win.document.close(); win.focus(); setTimeout(() => { win.print(); win.close(); }, 300);
     }
 
@@ -517,7 +727,7 @@
       workersList.innerHTML = D.workers.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.role}</td><td><button class="btn-small" onclick="editWorker(${x.id})">Editar</button> <button class="danger btn-small" onclick="delWorker(${x.id})">Eliminar</button></td></tr>`).join('');
       rc.innerHTML = '<option value="">Seleccione Cobrador</option>' + D.workers.map(x => `<option value="${x.name}">${x.name}</option>`).join('');
 
-      clientsList.innerHTML = D.clients.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.foto ? '✅' : '❌'}</td><td><button class="btn-small" onclick="editClient(${x.id})">Editar</button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');
+      clientsList.innerHTML = D.clients.map(x => `<tr><td>${x.name}</td><td>${x.ci}</td><td>${x.tel}</td><td>${x.route}</td><td>${x.firma ? `<button class="btn-small secondary" onclick="verFirmaClienteModal(${x.id})">Ver Firma</button>` : '❌'}</td><td>${x.foto ? '✅' : '❌'}</td><td><button class="btn-small" onclick="editClient(${x.id})">Editar</button> <button class="danger btn-small" onclick="delClient(${x.id})">Eliminar</button></td></tr>`).join('');
       lc.innerHTML = '<option value="">Seleccione cliente</option>' + D.clients.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
 
       loansList.innerHTML = D.loans.map(x => `<tr><td>${client(x.clientId)?.name || ''}</td><td>${x.date || '-'}</td><td>${money(x.amount)}</td><td>${money(x.total)}</td><td>${x.paidQuotas}/${x.totalQuotas}</td><td>${money(x.balance)}</td><td>${x.active ? 'Activo' : 'Pagado'}</td></tr>`).join('');
@@ -543,18 +753,33 @@
 
       let totalCobrado = D.payments.reduce((a, x) => a + (x.total || x.amount), 0);
       let totalGastado = D.expenses.reduce((a, x) => a + x.amount, 0);
+      let totalMora = D.payments.reduce((a, x) => a + (x.mora || 0), 0);
+      let totalEntregado = D.loans.reduce((a, x) => a + x.amount, 0);
+      let totalPendiente = D.loans.reduce((a, x) => a + x.balance, 0);
+
+      /* Cuadre de Cobro */
+      $('qPrestamosXCobrar').textContent = '(-) ' + money(totalPendiente);
+      $('qEntregaPrestamos').textContent = '(-) ' + money(totalEntregado);
+      $('qPagosMora').textContent = '(+) ' + money(totalMora);
+      $('qPagosAplicados').textContent = '(+) ' + money(totalCobrado - totalMora);
+      $('qGastosAplicados').textContent = '(-) ' + money(totalGastado);
+      
+      let efectivoTotal = totalCobrado - totalGastado;
+      $('qCajaBanco').textContent = money(efectivoTotal);
+      $('qDineroEfectivo').textContent = money(efectivoTotal);
+
       cashBox.innerHTML = `
         <div class="grid">
           <div class="stats">Entradas (Cobros)<br>${money(totalCobrado)}</div>
           <div class="stats" style="border-left-color:#b42318;">Salidas (Gastos)<br>${money(totalGastado)}</div>
-          <div class="stats" style="border-left-color:#2e7d32;">Efectivo en Caja<br>${money(totalCobrado - totalGastado)}</div>
+          <div class="stats" style="border-left-color:#2e7d32;">Efectivo en Caja<br>${money(efectivoTotal)}</div>
         </div>`;
 
       reportBox.innerHTML = `
         <div class="grid">
-          <div class="stats">Capital Prestado<br>${money(D.loans.reduce((a, x) => a + x.amount, 0))}</div>
+          <div class="stats">Capital Prestado<br>${money(totalEntregado)}</div>
           <div class="stats">Cobrado Netas<br>${money(totalCobrado)}</div>
-          <div class="stats">Pendiente por Cobrar<br>${money(D.loans.reduce((a, x) => a + x.balance, 0))}</div>
+          <div class="stats">Pendiente por Cobrar<br>${money(totalPendiente)}</div>
         </div>`;
     }
 
